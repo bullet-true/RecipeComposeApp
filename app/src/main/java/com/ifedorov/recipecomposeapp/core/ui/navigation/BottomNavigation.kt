@@ -37,29 +37,27 @@ fun BottomNavigation(
 ) {
     Row(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .windowInsetsPadding(WindowInsets.navigationBars)
             .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.navigationBars)
             .height(52.dp)
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         NavigationButton(
+            modifier = Modifier.weight(1f),
             text = stringResource(R.string.categories),
             backgroundColor = MaterialTheme.colorScheme.tertiary,
             textColor = MaterialTheme.colorScheme.surface,
-            modifier = Modifier
-                .weight(1f),
             onClick = { onCategoriesClick() }
         )
         Spacer(modifier = Modifier.width(4.dp))
         NavigationButton(
+            modifier = Modifier.weight(1f),
             text = stringResource(R.string.favorites),
             backgroundColor = MaterialTheme.colorScheme.error,
             textColor = MaterialTheme.colorScheme.surface,
             icon = painterResource(R.drawable.ic_heart_empty),
-            modifier = Modifier
-                .weight(1f),
             onClick = { onFavoriteClick() }
         )
     }
