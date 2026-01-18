@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices.PIXEL_7
 import androidx.compose.ui.tooling.preview.Preview
 import com.ifedorov.recipecomposeapp.core.ui.navigation.BottomNavigation
+import com.ifedorov.recipecomposeapp.ui.categories.CategoriesScreen
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 @Composable
@@ -43,9 +44,7 @@ fun RecipesApp() {
             ) {
                 when (currentScreen) {
                     ScreenId.CATEGORIES -> {
-                        Text(
-                            text = stringResource(R.string.categories)
-                        )
+                        CategoriesScreen()
                     }
 
                     ScreenId.FAVORITES -> {
