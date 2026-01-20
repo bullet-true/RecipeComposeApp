@@ -2,7 +2,6 @@ package com.ifedorov.recipecomposeapp.core.ui.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,19 +40,20 @@ fun ScreenHeader(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
-        Text(
-            text = title.uppercase(Locale.getDefault()),
-            style = MaterialTheme.typography.displayLarge,
-            color = MaterialTheme.colorScheme.primary,
+        Surface(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 16.dp, bottom = 16.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.background,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(10.dp)
-        )
+                .padding(start = 16.dp, bottom = 16.dp),
+            shape = RoundedCornerShape(8.dp),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Text(
+                text = title.uppercase(Locale.getDefault()),
+                style = MaterialTheme.typography.displayLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(10.dp)
+            )
+        }
     }
 }
 
