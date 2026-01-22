@@ -1,7 +1,7 @@
 package com.ifedorov.recipecomposeapp.data.model
 
 data class IngredientDto(
-    val quantity: Double,
+    val quantity: String,
     val unitOfMeasure: String,
     val description: String,
 )
