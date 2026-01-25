@@ -26,7 +26,7 @@ import java.util.Locale
 
 @Composable
 fun CategoryItem(
-    model: CategoryUiModel,
+    category: CategoryUiModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -40,8 +40,8 @@ fun CategoryItem(
     ) {
         Column {
             AsyncImage(
-                model = model.imageUrl,
-                contentDescription = model.title,
+                model = category.imageUrl,
+                contentDescription = category.title,
                 contentScale = ContentScale.Crop,
                 placeholder = painterResource(R.drawable.img_placeholder),
                 error = painterResource(R.drawable.img_error),
@@ -53,13 +53,13 @@ fun CategoryItem(
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(
-                    text = model.title.uppercase(Locale.getDefault()),
+                    text = category.title.uppercase(Locale.getDefault()),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = model.description,
+                    text = category.description,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -73,7 +73,7 @@ fun CategoryItem(
 fun PreviewCategoryItem() {
     RecipeComposeAppTheme {
         CategoryItem(
-            model = RecipesRepositoryStub.getCategories().first().toUiModel(),
+            category = RecipesRepositoryStub.getCategories().first().toUiModel(),
             onClick = {}
         )
     }
