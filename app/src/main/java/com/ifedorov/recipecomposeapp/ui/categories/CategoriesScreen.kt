@@ -47,7 +47,7 @@ fun CategoriesScreen(
                 key = { it.id }
             ) { item ->
                 CategoryItem(
-                    model = item,
+                    category = item,
                     onClick = { onCategoryClick(item.id, item.title) }
                 )
             }
