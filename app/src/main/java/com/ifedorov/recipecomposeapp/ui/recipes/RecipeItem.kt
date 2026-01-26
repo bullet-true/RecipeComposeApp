@@ -27,11 +27,11 @@ import java.util.Locale
 @Composable
 fun RecipeItem(
     recipe: RecipeUiModel,
-    onClick: (Int) -> Unit,
+    onRecipeClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
-        onClick = { onClick(recipe.id) },
+        onClick = { onRecipeClick(recipe.id) },
         modifier = modifier.height(132.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -65,7 +65,7 @@ fun PreviewRecipeItem() {
     RecipeComposeAppTheme {
         RecipeItem(
             recipe = RecipesRepositoryStub.getRecipesByCategoryId(0).first().toUiModel(),
-            onClick = {}
+            onRecipeClick = {}
         )
     }
 }
