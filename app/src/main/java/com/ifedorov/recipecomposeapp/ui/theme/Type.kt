@@ -26,8 +26,8 @@ val recipesAppTypography = Typography(
     titleMedium = TextStyle(
         fontFamily = montserratAlternatesFontFamily,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 16.sp,
-        lineHeight = 19.sp
+        fontSize = 14.sp,
+        lineHeight = 16.sp
     ),
 
     bodyMedium = TextStyle(
