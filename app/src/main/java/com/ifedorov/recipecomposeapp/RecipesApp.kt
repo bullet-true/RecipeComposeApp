@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices.PIXEL_7
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,17 +21,15 @@ import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 @Composable
 fun RecipesApp() {
     var currentScreen by remember { mutableStateOf(ScreenId.CATEGORIES) }
+    var selectedCategoryId by remember { mutableStateOf<Int?>(null) }
+    var selectedCategoryTitle by remember { mutableStateOf<String?>(null) }
 
     RecipeComposeAppTheme {
         Scaffold(
             bottomBar = {
                 BottomNavigation(
                     onCategoriesClick = {
-                        currentScreen = when (currentScreen) {
-                            ScreenId.CATEGORIES -> ScreenId.RECIPES
-                            ScreenId.RECIPES -> ScreenId.CATEGORIES
-                            ScreenId.FAVORITES -> ScreenId.CATEGORIES
-                        }
+                        currentScreen = ScreenId.CATEGORIES
                     },
                     onFavoriteClick = {
                         currentScreen = ScreenId.FAVORITES
@@ -43,12 +40,17 @@ fun RecipesApp() {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
+                    .padding(paddingValues)
             ) {
                 when (currentScreen) {
                     ScreenId.CATEGORIES -> {
-                        CategoriesScreen()
+                        CategoriesScreen(
+                            onCategoryClick = { id, title ->
+                                selectedCategoryId = id
+                                selectedCategoryTitle = title
+                                currentScreen = ScreenId.RECIPES
+                            }
+                        )
                     }
 
                     ScreenId.FAVORITES -> {
@@ -56,7 +58,14 @@ fun RecipesApp() {
                     }
 
                     ScreenId.RECIPES -> {
-                        RecipesScreen()
+                        val id = selectedCategoryId ?: error("Category ID is required")
+                        val title = selectedCategoryTitle ?: error("Category title is required")
+
+                        RecipesScreen(
+                            categoryId = id,
+                            categoryTitle = title,
+                            onRecipeClick = {}
+                        )
                     }
                 }
             }

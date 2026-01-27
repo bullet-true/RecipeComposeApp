@@ -22,7 +22,8 @@ import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 @Composable
 fun CategoriesScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCategoryClick: (Int, String) -> Unit
 ) {
     val categories = RecipesRepositoryStub.getCategories().map { it.toUiModel() }
 
@@ -47,7 +48,7 @@ fun CategoriesScreen(
             ) { item ->
                 CategoryItem(
                     category = item,
-                    onClick = { }
+                    onClick = { onCategoryClick(item.id, item.title) }
                 )
             }
         }
@@ -67,6 +68,8 @@ fun CategoriesScreen(
 @Composable
 private fun PreviewCategoriesScreen() {
     RecipeComposeAppTheme {
-        CategoriesScreen()
+        CategoriesScreen(
+            onCategoryClick = { _, _ -> }
+        )
     }
 }
