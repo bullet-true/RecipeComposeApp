@@ -60,4 +60,6 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.coil.okhttp)
+
+    implementation(libs.navigation.compose)
 }
