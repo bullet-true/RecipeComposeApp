@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices.PIXEL_7
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,6 +36,10 @@ fun RecipesApp() {
                     onCategoriesClick = {
                         if (currentRoute != Destination.Categories.route) {
                             navController.navigate(Destination.Categories.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
                                 restoreState = true
                             }
                         }
@@ -42,6 +47,10 @@ fun RecipesApp() {
                     onFavoriteClick = {
                         if (currentRoute != Destination.Favorites.route) {
                             navController.navigate(Destination.Favorites.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
                                 restoreState = true
                             }
                         }
@@ -77,7 +86,7 @@ fun RecipesApp() {
                     ) { backStackEntry ->
                         val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
                         val categoryTitle =
-                            backStackEntry.arguments?.getString("categoryTitle") ?: "Unknow title"
+                            backStackEntry.arguments?.getString("categoryTitle") ?: "Unknown title"
 
                         RecipesScreen(
                             categoryId = categoryId,
