@@ -12,7 +12,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ifedorov.recipecomposeapp.core.ui.navigation.BottomNavigation
@@ -29,30 +28,23 @@ fun RecipesApp() {
     RecipeComposeAppTheme {
         Scaffold(
             bottomBar = {
-                val backStackEntry = navController.currentBackStackEntryAsState().value
-                val currentRoute = backStackEntry?.destination?.route
-
                 BottomNavigation(
                     onCategoriesClick = {
-                        if (currentRoute != Destination.Categories.route) {
-                            navController.navigate(Destination.Categories.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
+                        navController.navigate(Destination.Categories.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
                             }
+                            launchSingleTop = true
+                            restoreState = true
                         }
                     },
                     onFavoriteClick = {
-                        if (currentRoute != Destination.Favorites.route) {
-                            navController.navigate(Destination.Favorites.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
+                        navController.navigate(Destination.Favorites.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
                             }
+                            launchSingleTop = true
+                            restoreState = true
                         }
                     }
                 )
