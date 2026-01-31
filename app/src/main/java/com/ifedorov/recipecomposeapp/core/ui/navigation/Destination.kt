@@ -6,4 +6,7 @@ sealed class Destination(val route: String) {
     object Recipes: Destination("recipes/{categoryId}/{categoryTitle}") {
         fun createRoute(categoryId: Int, categoryTitle: String) = "recipes/$categoryId/$categoryTitle"
     }
+    object RecipeDetails: Destination("recipe/{recipeId}") {
+        fun createRoute(recipeId: Int) = "recipe/$recipeId"
+    }
 }
