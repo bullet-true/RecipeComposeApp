@@ -34,12 +34,19 @@ fun RecipesApp() {
             bottomBar = {
                 BottomNavigation(
                     onCategoriesClick = {
-                        navController.navigate(Destination.Categories.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                        val popped = navController.popBackStack(
+                            route = Destination.Categories.route,
+                            inclusive = false
+                        )
+
+                        if (!popped) {
+                            navController.navigate(Destination.Categories.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
                         }
                     },
                     onFavoriteClick = {
