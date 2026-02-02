@@ -2,4 +2,7 @@
     <string name="app_name">RecipeComposeApp</string>
     <string name="categories">Категории</string>
     <string name="favorites">Избранное</string>
+    <string name="ingredients">Ингредиенты</string>
+    <string name="method">Способ приготовления</string>
+    <string name="servings">Порции:</string>
 </resources>

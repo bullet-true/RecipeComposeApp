@@ -30,6 +30,13 @@ val recipesAppTypography = Typography(
         lineHeight = 16.sp
     ),
 
+    bodyLarge = TextStyle(
+        fontFamily = montserratFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+        lineHeight = 19.5.sp
+    ),
+
     bodyMedium = TextStyle(
         fontFamily = montserratFontFamily,
         fontWeight = FontWeight.Medium,
@@ -49,7 +56,7 @@ val recipesAppTypography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 19.5.sp
-    )
+    ),
 )
 
 @Preview(showBackground = true)
