@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,7 +27,7 @@ import java.util.Locale
 @Composable
 fun ScreenHeader(
     title: String,
-    @DrawableRes backgroundImage: Int,
+    backgroundImage: Painter,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -35,7 +36,7 @@ fun ScreenHeader(
             .height(224.dp)
     ) {
         Image(
-            painter = painterResource(id = backgroundImage),
+            painter = backgroundImage,
             contentDescription = title,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
@@ -63,7 +64,7 @@ fun PreviewScreenHeader() {
     RecipeComposeAppTheme {
         ScreenHeader(
             title = stringResource(R.string.categories),
-            backgroundImage = R.drawable.img_error
+            backgroundImage = painterResource(R.drawable.img_error)
         )
     }
 }
