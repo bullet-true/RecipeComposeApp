@@ -15,7 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ifedorov.recipecomposeapp.R
@@ -33,8 +33,14 @@ fun PortionsSelector(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
+        val portionsText = pluralStringResource(
+            R.plurals.portions_count,
+            currentPortions,
+            currentPortions
+        )
+
         Text(
-            text = stringResource(R.string.servings, currentPortions),
+            text = portionsText,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
