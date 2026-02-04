@@ -9,10 +9,12 @@ import kotlinx.parcelize.Parcelize
 @Immutable
 data class IngredientUiModel(
     val name: String,
-    val amount: String,
-): Parcelable
+    val quantity: String,
+    val unitOfMeasure: String,
+) : Parcelable
 
 fun IngredientDto.toUiModel() = IngredientUiModel(
     name = description,
-    amount = if (unitOfMeasure.isNotBlank()) "$quantity $unitOfMeasure" else quantity
+    quantity = quantity,
+    unitOfMeasure = unitOfMeasure
 )
