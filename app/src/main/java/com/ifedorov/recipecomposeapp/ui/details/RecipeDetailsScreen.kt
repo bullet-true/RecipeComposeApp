@@ -1,10 +1,11 @@
 package com.ifedorov.recipecomposeapp.ui.details
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -51,9 +52,18 @@ fun RecipeDetailsScreen(
         )
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(16.dp)
         ) {
+            item {
+                Text(
+                    text = stringResource(R.string.ingredients).uppercase(Locale.getDefault()),
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(6.dp))
+            }
             item {
                 PortionsSelector(
                     currentPortions = currentPortions,
@@ -63,7 +73,13 @@ fun RecipeDetailsScreen(
                 )
             }
             item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
                 IngredientsList(scaledIngredients)
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
             item {
                 Text(
@@ -71,6 +87,9 @@ fun RecipeDetailsScreen(
                     style = MaterialTheme.typography.displayLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
             item {
                 InstructionsList(recipe.method)

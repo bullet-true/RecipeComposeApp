@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -21,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
-import java.util.Locale
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,22 +34,10 @@ fun PortionsSelector(
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
-            text = stringResource(R.string.ingredients).uppercase(Locale.getDefault()),
-            style = MaterialTheme.typography.displayLarge,
-            color = MaterialTheme.colorScheme.primary
+            text = stringResource(R.string.servings, currentPortions),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(
-                text = stringResource(R.string.servings),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = currentPortions.toString(),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
         Slider(
             value = currentPortions.toFloat(),
             onValueChange = { onPortionsChange(it.roundToInt()) },
