@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,7 +27,9 @@ fun CategoriesScreen(
     modifier: Modifier = Modifier,
     onCategoryClick: (Int, String) -> Unit
 ) {
-    val categories = RecipesRepositoryStub.getCategories().map { it.toUiModel() }
+    val categories = remember {
+        RecipesRepositoryStub.getCategories().map { it.toUiModel() }
+    }
 
     Column(
         modifier = modifier

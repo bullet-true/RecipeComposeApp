@@ -15,14 +15,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.ifedorov.recipecomposeapp.core.Constants.KEY_RECIPE_OBJECT
 import com.ifedorov.recipecomposeapp.core.ui.navigation.BottomNavigation
 import com.ifedorov.recipecomposeapp.core.ui.navigation.Destination
 import com.ifedorov.recipecomposeapp.ui.categories.CategoriesScreen
 import com.ifedorov.recipecomposeapp.ui.details.RecipeDetailsScreen
 import com.ifedorov.recipecomposeapp.ui.favorites.FavoritesScreen
 import com.ifedorov.recipecomposeapp.ui.recipes.RecipesScreen
-import com.ifedorov.recipecomposeapp.ui.recipes.model.RecipeUiModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 @Composable
@@ -94,11 +92,7 @@ fun RecipesApp() {
                         RecipesScreen(
                             categoryId = categoryId,
                             categoryTitle = categoryTitle,
-                            onRecipeClick = { recipeId, recipe ->
-                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                    KEY_RECIPE_OBJECT,
-                                    recipe
-                                )
+                            onRecipeClick = { recipeId ->
                                 navController.navigate(
                                     Destination.RecipeDetails.createRoute(recipeId)
                                 )
@@ -108,14 +102,10 @@ fun RecipesApp() {
                     composable(
                         route = Destination.RecipeDetails.route,
                         arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
-                    ) {
-                        val savedStateHandle =
-                            navController.previousBackStackEntry?.savedStateHandle
-
-                        val recipe = savedStateHandle?.get<RecipeUiModel>(KEY_RECIPE_OBJECT)
-
-                        if (recipe != null) {
-                            RecipeDetailsScreen(recipe)
+                    ) { backStackEntry ->
+                        val recipeId = backStackEntry.arguments?.getInt("recipeId")
+                        if (recipeId != null) {
+                            RecipeDetailsScreen(recipeId)
                         } else {
                             Text("Рецепт не найден")
                         }
