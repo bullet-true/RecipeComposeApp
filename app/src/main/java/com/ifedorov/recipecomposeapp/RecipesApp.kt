@@ -1,11 +1,13 @@
 package com.ifedorov.recipecomposeapp
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices.PIXEL_7
 import androidx.compose.ui.tooling.preview.Preview
@@ -15,6 +17,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ifedorov.recipecomposeapp.core.Constants.DEEP_LINK_SCHEME
+import com.ifedorov.recipecomposeapp.core.Constants.PARAM_RECIPE_ID
 import com.ifedorov.recipecomposeapp.core.ui.navigation.BottomNavigation
 import com.ifedorov.recipecomposeapp.core.ui.navigation.Destination
 import com.ifedorov.recipecomposeapp.ui.categories.CategoriesScreen
@@ -22,10 +26,36 @@ import com.ifedorov.recipecomposeapp.ui.details.RecipeDetailsScreen
 import com.ifedorov.recipecomposeapp.ui.favorites.FavoritesScreen
 import com.ifedorov.recipecomposeapp.ui.recipes.RecipesScreen
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
+import kotlinx.coroutines.delay
 
 @Composable
-fun RecipesApp() {
+fun RecipesApp(
+    deepLinkIntent: Intent?
+) {
     val navController = rememberNavController()
+
+    LaunchedEffect(deepLinkIntent) {
+        deepLinkIntent?.data?.let { uri ->
+            val recipeId: Int? = when (uri.scheme) {
+                DEEP_LINK_SCHEME -> {
+                    if (uri.host == "recipe") uri.pathSegments[0].toIntOrNull() else null
+                }
+
+                "https", "http" -> {
+                    if (uri.pathSegments[0] == "recipe") uri.pathSegments[1].toIntOrNull() else null
+                }
+
+                else -> null
+            }
+
+            if (recipeId != null) {
+                delay(100)
+                navController.navigate(Destination.RecipeDetails.createRoute(recipeId)) {
+                    launchSingleTop = true
+                }
+            }
+        }
+    }
 
     RecipeComposeAppTheme {
         Scaffold(
@@ -101,9 +131,9 @@ fun RecipesApp() {
                     }
                     composable(
                         route = Destination.RecipeDetails.route,
-                        arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
+                        arguments = listOf(navArgument(PARAM_RECIPE_ID) { type = NavType.IntType })
                     ) { backStackEntry ->
-                        val recipeId = backStackEntry.arguments?.getInt("recipeId")
+                        val recipeId = backStackEntry.arguments?.getInt(PARAM_RECIPE_ID)
                         if (recipeId != null) {
                             RecipeDetailsScreen(recipeId)
                         } else {
@@ -119,5 +149,7 @@ fun RecipesApp() {
 @Preview(showBackground = true, showSystemUi = true, device = PIXEL_7)
 @Composable
 private fun PreviewRecipesApp() {
-    RecipesApp()
+    RecipesApp(
+        deepLinkIntent = null
+    )
 }

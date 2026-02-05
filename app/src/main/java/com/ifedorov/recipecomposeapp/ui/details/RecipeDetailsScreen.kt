@@ -17,13 +17,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.ifedorov.recipecomposeapp.R
-import com.ifedorov.recipecomposeapp.core.extensions.scaled
+import com.ifedorov.recipecomposeapp.core.extensions.IngredientExtensions.scaled
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
+import com.ifedorov.recipecomposeapp.core.utils.ShareUtils
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.ui.recipes.model.RecipeUiModel
 import com.ifedorov.recipecomposeapp.ui.recipes.model.toUiModel
@@ -49,6 +51,7 @@ fun RecipeDetailsScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     } else {
+        val context = LocalContext.current
         val backgroundImage = rememberAsyncImagePainter(recipe.imageUrl)
         var currentPortions by remember { mutableIntStateOf(1) }
 
@@ -65,6 +68,14 @@ fun RecipeDetailsScreen(
             ScreenHeader(
                 title = recipe.title,
                 backgroundImage = backgroundImage,
+                showShareButton = true,
+                onShareClick = {
+                    ShareUtils.shareRecipe(
+                        context = context,
+                        recipeId = recipe.id,
+                        recipeTitle = recipe.title
+                    )
+                }
             )
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
