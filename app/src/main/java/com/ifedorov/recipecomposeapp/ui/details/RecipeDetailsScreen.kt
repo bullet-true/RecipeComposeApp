@@ -46,7 +46,7 @@ fun RecipeDetailsScreen(
     val recipe = recipeUi
     if (recipe == null) {
         Text(
-            text = "Рецепт не найден",
+            text = stringResource(R.string.recipe_not_found),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

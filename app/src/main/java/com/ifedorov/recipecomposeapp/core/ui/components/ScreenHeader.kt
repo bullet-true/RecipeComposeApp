@@ -69,7 +69,7 @@ fun ScreenHeader(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_share),
-                    contentDescription = "Поделиться",
+                    contentDescription = stringResource(R.string.share),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

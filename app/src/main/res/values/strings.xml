@@ -5,4 +5,8 @@
     <string name="ingredients">Ингредиенты</string>
     <string name="method">Способ приготовления</string>
     <string name="servings">Порции: %1$d</string>
+    <string name="share">Поделиться</string>
+    <string name="share_recipe">Поделиться рецептом</string>
+    <string name="share_recipe_text">Попробуй этот рецепт: %1$s\n%2$s</string>
+    <string name="recipe_not_found">Рецепт не найден</string>
 </resources>
