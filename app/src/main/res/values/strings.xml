@@ -4,5 +4,5 @@
     <string name="favorites">Избранное</string>
     <string name="ingredients">Ингредиенты</string>
     <string name="method">Способ приготовления</string>
-    <string name="servings">Порции:</string>
+    <string name="servings">Порции: %1$d</string>
 </resources>

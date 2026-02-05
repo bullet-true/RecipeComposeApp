@@ -15,7 +15,8 @@ data class RecipeUiModel(
     val ingredients: List<IngredientUiModel>,
     val method: List<String>,
     val isFavorite: Boolean,
-): Parcelable
+    val servings: Int,
+) : Parcelable
 
 fun RecipeDto.toUiModel(isFavorite: Boolean = false) = RecipeUiModel(
     id = id,
@@ -27,5 +28,6 @@ fun RecipeDto.toUiModel(isFavorite: Boolean = false) = RecipeUiModel(
     },
     ingredients = ingredients.map { it.toUiModel() },
     method = method,
-    isFavorite = isFavorite
+    isFavorite = isFavorite,
+    servings = 1
 )
