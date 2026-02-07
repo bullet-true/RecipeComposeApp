@@ -10,18 +10,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.ifedorov.recipecomposeapp.R
-import com.ifedorov.recipecomposeapp.core.extensions.scaled
+import com.ifedorov.recipecomposeapp.core.extensions.IngredientExtensions.scaled
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
+import com.ifedorov.recipecomposeapp.core.utils.ShareUtils
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.ui.recipes.model.RecipeUiModel
 import com.ifedorov.recipecomposeapp.ui.recipes.model.toUiModel
@@ -30,69 +34,93 @@ import java.util.Locale
 
 @Composable
 fun RecipeDetailsScreen(
-    recipe: RecipeUiModel,
+    recipeId: Int,
     modifier: Modifier = Modifier
 ) {
-    val backgroundImage = rememberAsyncImagePainter(recipe.imageUrl)
-    var currentPortions by remember { mutableIntStateOf(1) }
+    var recipeUi by remember { mutableStateOf<RecipeUiModel?>(null) }
 
-    val scaledIngredients = remember(currentPortions, recipe.ingredients, recipe.servings) {
-        val multiplier = currentPortions.toDouble() / recipe.servings
-
-        recipe.ingredients.map { it.scaled(multiplier) }
+    LaunchedEffect(recipeId) {
+        recipeUi = RecipesRepositoryStub.getRecipeById(recipeId)?.toUiModel()
     }
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        ScreenHeader(
-            title = recipe.title,
-            backgroundImage = backgroundImage,
+
+    val recipe = recipeUi
+    if (recipe == null) {
+        Text(
+            text = stringResource(R.string.recipe_not_found),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
+    } else {
+        val context = LocalContext.current
+        val backgroundImage = rememberAsyncImagePainter(recipe.imageUrl)
+        var currentPortions by remember { mutableIntStateOf(1) }
+
+        val scaledIngredients = remember(currentPortions, recipe.ingredients, recipe.servings) {
+            val multiplier = currentPortions.toDouble() / recipe.servings
+
+            recipe.ingredients.map { it.scaled(multiplier) }
+        }
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            item {
-                Text(
-                    text = stringResource(R.string.ingredients).uppercase(Locale.getDefault()),
-                    style = MaterialTheme.typography.displayLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(6.dp))
-            }
-            item {
-                PortionsSelector(
-                    currentPortions = currentPortions,
-                    onPortionsChange = { newValue ->
-                        currentPortions = newValue
-                    }
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            item {
-                IngredientsList(scaledIngredients)
-            }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            item {
-                Text(
-                    text = stringResource(R.string.method).uppercase(Locale.getDefault()),
-                    style = MaterialTheme.typography.displayLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            item {
-                InstructionsList(recipe.method)
+            ScreenHeader(
+                title = recipe.title,
+                backgroundImage = backgroundImage,
+                showShareButton = true,
+                onShareClick = {
+                    ShareUtils.shareRecipe(
+                        context = context,
+                        recipeId = recipe.id,
+                        recipeTitle = recipe.title
+                    )
+                }
+            )
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                item {
+                    Text(
+                        text = stringResource(R.string.ingredients).uppercase(Locale.getDefault()),
+                        style = MaterialTheme.typography.displayLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(6.dp))
+                }
+                item {
+                    PortionsSelector(
+                        currentPortions = currentPortions,
+                        onPortionsChange = { newValue ->
+                            currentPortions = newValue
+                        }
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
+                    IngredientsList(scaledIngredients)
+                }
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
+                    Text(
+                        text = stringResource(R.string.method).uppercase(Locale.getDefault()),
+                        style = MaterialTheme.typography.displayLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
+                    InstructionsList(recipe.method)
+                }
             }
         }
     }
@@ -103,7 +131,7 @@ fun RecipeDetailsScreen(
 private fun PreviewRecipeDetailsScreen() {
     RecipeComposeAppTheme {
         RecipeDetailsScreen(
-            recipe = RecipesRepositoryStub.getRecipesByCategoryId(0).first().toUiModel()
+            recipeId = RecipesRepositoryStub.getRecipeById(0)?.id ?: 0
         )
     }
 }

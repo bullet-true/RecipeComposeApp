@@ -77,4 +77,6 @@ object RecipesRepositoryStub {
     fun getRecipesByCategoryId(categoryId: Int): List<RecipeDto> {
         return recipes.filter { it.categoryIds.contains(categoryId) }
     }
+
+    fun getRecipeById(recipeId: Int): RecipeDto? = recipes.find { it.id == recipeId }
 }

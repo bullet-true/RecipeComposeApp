@@ -1,6 +1,6 @@
 package com.ifedorov.recipecomposeapp.core.ui.components
 
-import androidx.annotation.DrawableRes
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,7 +30,9 @@ import java.util.Locale
 fun ScreenHeader(
     title: String,
     backgroundImage: Painter,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showShareButton: Boolean = false,
+    onShareClick: (() -> Unit)? = null
 ) {
     Box(
         modifier = modifier
@@ -44,7 +48,7 @@ fun ScreenHeader(
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
+                .padding(start = 16.dp, bottom = 16.dp, end = 46.dp),
             shape = RoundedCornerShape(8.dp),
             color = MaterialTheme.colorScheme.background
         ) {
@@ -55,6 +59,21 @@ fun ScreenHeader(
                 modifier = Modifier.padding(10.dp)
             )
         }
+
+        if (showShareButton && onShareClick != null) {
+            IconButton(
+                onClick = onShareClick,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_share),
+                    contentDescription = stringResource(R.string.share),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
     }
 }
 
@@ -64,7 +83,9 @@ fun PreviewScreenHeader() {
     RecipeComposeAppTheme {
         ScreenHeader(
             title = stringResource(R.string.categories),
-            backgroundImage = painterResource(R.drawable.img_error)
+            backgroundImage = painterResource(R.drawable.img_error),
+            showShareButton = true,
+            onShareClick = {}
         )
     }
 }
