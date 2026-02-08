@@ -1,12 +1,15 @@
 package com.ifedorov.recipecomposeapp.core.ui.components
 
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,10 +19,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ifedorov.recipecomposeapp.R
@@ -32,7 +39,10 @@ fun ScreenHeader(
     backgroundImage: Painter,
     modifier: Modifier = Modifier,
     showShareButton: Boolean = false,
-    onShareClick: (() -> Unit)? = null
+    onShareClick: (() -> Unit)? = null,
+    showFavoriteButton: Boolean = false,
+    isFavorite: Boolean = false,
+    onFavoriteToggle: (() -> Unit)? = null
 ) {
     Box(
         modifier = modifier
@@ -66,12 +76,45 @@ fun ScreenHeader(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp)
+                    .size(40.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_share),
                     contentDescription = stringResource(R.string.share),
                     tint = MaterialTheme.colorScheme.primary
                 )
+            }
+        }
+
+        if (showFavoriteButton && onFavoriteToggle != null) {
+            IconButton(
+                onClick = onFavoriteToggle,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .size(40.dp)
+
+            ) {
+                Crossfade(
+                    targetState = isFavorite,
+                    animationSpec = tween(durationMillis = 300),
+                    label = "favorite_animation"
+                ) { isCurrentlyFavorite ->
+                    val heartIcon = rememberVectorPainter(
+                        image = ImageVector.vectorResource(
+                            id = if (isCurrentlyFavorite) {
+                                R.drawable.ic_heart
+                            } else {
+                                R.drawable.ic_heart_empty
+                            }
+                        )
+                    )
+                    Icon(
+                        painter = heartIcon,
+                        contentDescription = stringResource(R.string.favorites),
+                        tint = Color.Unspecified
+                    )
+                }
             }
         }
     }
@@ -85,7 +128,10 @@ fun PreviewScreenHeader() {
             title = stringResource(R.string.categories),
             backgroundImage = painterResource(R.drawable.img_error),
             showShareButton = true,
-            onShareClick = {}
+            onShareClick = {},
+            showFavoriteButton = true,
+            isFavorite = true,
+            onFavoriteToggle = { }
         )
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +36,8 @@ import java.util.Locale
 @Composable
 fun RecipeDetailsScreen(
     recipeId: Int,
+    isFavorite: Boolean,
+    onFavoriteToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var recipeUi by remember { mutableStateOf<RecipeUiModel?>(null) }
@@ -53,7 +56,7 @@ fun RecipeDetailsScreen(
     } else {
         val context = LocalContext.current
         val backgroundImage = rememberAsyncImagePainter(recipe.imageUrl)
-        var currentPortions by remember { mutableIntStateOf(1) }
+        var currentPortions by rememberSaveable(recipeId) { mutableIntStateOf(1) }
 
         val scaledIngredients = remember(currentPortions, recipe.ingredients, recipe.servings) {
             val multiplier = currentPortions.toDouble() / recipe.servings
@@ -75,7 +78,10 @@ fun RecipeDetailsScreen(
                         recipeId = recipe.id,
                         recipeTitle = recipe.title
                     )
-                }
+                },
+                showFavoriteButton = true,
+                isFavorite = isFavorite,
+                onFavoriteToggle = onFavoriteToggle
             )
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -131,7 +137,9 @@ fun RecipeDetailsScreen(
 private fun PreviewRecipeDetailsScreen() {
     RecipeComposeAppTheme {
         RecipeDetailsScreen(
-            recipeId = RecipesRepositoryStub.getRecipeById(0)?.id ?: 0
+            recipeId = RecipesRepositoryStub.getRecipeById(0)?.id ?: 0,
+            isFavorite = false,
+            onFavoriteToggle = {}
         )
     }
 }
