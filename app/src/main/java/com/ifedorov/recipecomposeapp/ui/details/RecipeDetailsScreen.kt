@@ -26,6 +26,7 @@ import coil3.compose.rememberAsyncImagePainter
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.extensions.IngredientExtensions.scaled
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
+import com.ifedorov.recipecomposeapp.core.utils.FavoritePrefsManager
 import com.ifedorov.recipecomposeapp.core.utils.ShareUtils
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.ui.recipes.model.RecipeUiModel
@@ -36,8 +37,6 @@ import java.util.Locale
 @Composable
 fun RecipeDetailsScreen(
     recipeId: Int,
-    isFavorite: Boolean,
-    onFavoriteToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var recipeUi by remember { mutableStateOf<RecipeUiModel?>(null) }
@@ -55,12 +54,15 @@ fun RecipeDetailsScreen(
         )
     } else {
         val context = LocalContext.current
+        val favoritePrefs = remember(context) { FavoritePrefsManager(context) }
+        var isFavorite by remember(recipeId) {
+            mutableStateOf(favoritePrefs.isFavorite(recipeId))
+        }
         val backgroundImage = rememberAsyncImagePainter(recipe.imageUrl)
         var currentPortions by rememberSaveable(recipeId) { mutableIntStateOf(1) }
 
-        val scaledIngredients = remember(currentPortions, recipe.ingredients, recipe.servings) {
+        val scaledIngredients = remember(currentPortions, recipe.ingredients) {
             val multiplier = currentPortions.toDouble() / recipe.servings
-
             recipe.ingredients.map { it.scaled(multiplier) }
         }
         Column(
@@ -81,7 +83,16 @@ fun RecipeDetailsScreen(
                 },
                 showFavoriteButton = true,
                 isFavorite = isFavorite,
-                onFavoriteToggle = onFavoriteToggle
+                onFavoriteToggle = {
+                    (!isFavorite).also { newValue ->
+                        isFavorite = newValue
+                        if (newValue) {
+                            favoritePrefs.addToFavorites(recipeId)
+                        } else {
+                            favoritePrefs.removeFromFavorites(recipeId)
+                        }
+                    }
+                }
             )
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -137,9 +148,7 @@ fun RecipeDetailsScreen(
 private fun PreviewRecipeDetailsScreen() {
     RecipeComposeAppTheme {
         RecipeDetailsScreen(
-            recipeId = RecipesRepositoryStub.getRecipeById(0)?.id ?: 0,
-            isFavorite = false,
-            onFavoriteToggle = {}
+            recipeId = RecipesRepositoryStub.getRecipeById(0)?.id ?: 0
         )
     }
 }
