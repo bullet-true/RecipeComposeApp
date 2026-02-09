@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">RecipeComposeApp</string>
+    <string name="preference_favorites_recipes">com.ifedorov.recipecomposeapp.FAVORITES_PREFS</string>
+    <string name="favorite_recipe_ids">favorite_recipe_ids</string>
     <string name="categories">Категории</string>
     <string name="favorites">Избранное</string>
     <string name="ingredients">Ингредиенты</string>
