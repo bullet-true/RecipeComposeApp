@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -24,14 +25,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.ifedorov.recipecomposeapp.R
+import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
 import com.ifedorov.recipecomposeapp.core.extensions.IngredientExtensions.scaled
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
-import com.ifedorov.recipecomposeapp.core.utils.FavoritePrefsManager
 import com.ifedorov.recipecomposeapp.core.utils.ShareUtils
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.ui.recipes.model.RecipeUiModel
 import com.ifedorov.recipecomposeapp.ui.recipes.model.toUiModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Composable
@@ -54,12 +56,16 @@ fun RecipeDetailsScreen(
         )
     } else {
         val context = LocalContext.current
-        val favoritePrefs = remember(context) { FavoritePrefsManager(context) }
-        var isFavorite by remember(recipeId) {
-            mutableStateOf(favoritePrefs.isFavorite(recipeId))
+        val coroutineScope = rememberCoroutineScope()
+        val favoriteManager = remember(context) { FavoriteDataStoreManager(context) }
+        var isFavorite by remember(recipe.id) { mutableStateOf(false) }
+
+        LaunchedEffect(recipe.id) {
+            isFavorite = favoriteManager.isFavorite(recipe.id)
         }
+
         val backgroundImage = rememberAsyncImagePainter(recipe.imageUrl)
-        var currentPortions by rememberSaveable(recipeId) { mutableIntStateOf(1) }
+        var currentPortions by rememberSaveable(recipe.id) { mutableIntStateOf(1) }
 
         val scaledIngredients = remember(currentPortions, recipe.ingredients) {
             val multiplier = currentPortions.toDouble() / recipe.servings
@@ -84,12 +90,14 @@ fun RecipeDetailsScreen(
                 showFavoriteButton = true,
                 isFavorite = isFavorite,
                 onFavoriteToggle = {
-                    (!isFavorite).also { newValue ->
-                        isFavorite = newValue
-                        if (newValue) {
-                            favoritePrefs.addToFavorites(recipeId)
-                        } else {
-                            favoritePrefs.removeFromFavorites(recipeId)
+                    coroutineScope.launch {
+                        (!isFavorite).also { newValue ->
+                            if (newValue) {
+                                favoriteManager.addFavorite(recipe.id)
+                            } else {
+                                favoriteManager.removeFavorite(recipe.id)
+                            }
+                            isFavorite = newValue
                         }
                     }
                 }

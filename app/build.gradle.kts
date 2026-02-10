@@ -63,4 +63,6 @@ dependencies {
     implementation(libs.coil.okhttp)
 
     implementation(libs.navigation.compose)
+
+    implementation(libs.datastore)
 }
