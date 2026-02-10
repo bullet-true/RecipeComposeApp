@@ -35,7 +35,8 @@ import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 @Composable
 fun BottomNavigation(
     onCategoriesClick: () -> Unit,
-    onFavoriteClick: () -> Unit
+    onFavoriteClick: () -> Unit,
+    favoriteCount: Int
 ) {
     Row(
         modifier = Modifier
@@ -60,6 +61,7 @@ fun BottomNavigation(
             backgroundColor = MaterialTheme.colorScheme.error,
             textColor = MaterialTheme.colorScheme.surface,
             icon = painterResource(R.drawable.ic_heart_empty),
+            favoriteCount = favoriteCount.takeIf { it > 0 },
             onClick = { onFavoriteClick() }
         )
     }
@@ -72,6 +74,7 @@ private fun NavigationButton(
     backgroundColor: Color,
     textColor: Color,
     icon: Painter? = null,
+    favoriteCount: Int? = null,
     onClick: () -> Unit
 ) {
     Box(
@@ -94,12 +97,24 @@ private fun NavigationButton(
 
             if (icon != null) {
                 Spacer(modifier = Modifier.width(10.dp))
-                Icon(
-                    painter = icon,
-                    contentDescription = null,
-                    tint = textColor,
-                    modifier = Modifier.size(24.dp)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = icon,
+                        contentDescription = null,
+                        tint = textColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    if (favoriteCount != null) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = favoriteCount.toString(),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = textColor,
+                        )
+                    }
+                }
             }
         }
     }
@@ -111,7 +126,8 @@ private fun PreviewBottomNavigation() {
     RecipeComposeAppTheme {
         BottomNavigation(
             onCategoriesClick = {},
-            onFavoriteClick = {}
+            onFavoriteClick = {},
+            favoriteCount = 12
         )
     }
 }
@@ -122,7 +138,8 @@ private fun PreviewBottomNavigationNightMode() {
     RecipeComposeAppTheme {
         BottomNavigation(
             onCategoriesClick = {},
-            onFavoriteClick = {}
+            onFavoriteClick = {},
+            favoriteCount = 12
         )
     }
 }
@@ -149,6 +166,7 @@ private fun PreviewNavigationButtonFavorites() {
             backgroundColor = MaterialTheme.colorScheme.error,
             textColor = MaterialTheme.colorScheme.surface,
             icon = painterResource(R.drawable.ic_heart_empty),
+            favoriteCount = 12,
             onClick = {}
         )
     }
