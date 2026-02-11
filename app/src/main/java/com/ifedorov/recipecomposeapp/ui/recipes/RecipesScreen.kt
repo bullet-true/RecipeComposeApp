@@ -40,7 +40,7 @@ fun RecipesScreen(
 
     LaunchedEffect(categoryId) {
         isLoading = true
-        delay(1000)
+        delay(500)
 
         try {
             recipes = RecipesRepositoryStub.getRecipesByCategoryId(categoryId).map { it.toUiModel() }

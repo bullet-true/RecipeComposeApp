@@ -27,6 +27,7 @@ import com.ifedorov.recipecomposeapp.core.Constants.PARAM_RECIPE_ID
 import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
 import com.ifedorov.recipecomposeapp.core.ui.navigation.BottomNavigation
 import com.ifedorov.recipecomposeapp.core.ui.navigation.Destination
+import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.ui.categories.CategoriesScreen
 import com.ifedorov.recipecomposeapp.ui.details.RecipeDetailsScreen
 import com.ifedorov.recipecomposeapp.ui.favorites.FavoritesScreen
@@ -117,7 +118,15 @@ fun RecipesApp(
                         )
                     }
                     composable(Destination.Favorites.route) {
-                        FavoritesScreen()
+                        FavoritesScreen(
+                            repository = RecipesRepositoryStub,
+                            dataStoreManager = favoriteDataStoreManager,
+                            onFavoriteRecipeClick = { recipeId ->
+                                navController.navigate(
+                                    Destination.RecipeDetails.createRoute(recipeId)
+                                )
+                            }
+                        )
                     }
                     composable(
                         route = Destination.Recipes.route,
