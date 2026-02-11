@@ -8,7 +8,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices.PIXEL_7
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ifedorov.recipecomposeapp.core.Constants.DEEP_LINK_SCHEME
 import com.ifedorov.recipecomposeapp.core.Constants.PARAM_RECIPE_ID
+import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
 import com.ifedorov.recipecomposeapp.core.ui.navigation.BottomNavigation
 import com.ifedorov.recipecomposeapp.core.ui.navigation.Destination
 import com.ifedorov.recipecomposeapp.ui.categories.CategoriesScreen
@@ -34,6 +39,10 @@ fun RecipesApp(
     deepLinkIntent: Intent?
 ) {
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val favoriteDataStoreManager = remember(context) { FavoriteDataStoreManager(context) }
+    val favoritesCount by favoriteDataStoreManager.getFavoriteCountFlow()
+        .collectAsState(initial = 0)
 
     LaunchedEffect(deepLinkIntent) {
         deepLinkIntent?.data?.let { uri ->
@@ -86,7 +95,8 @@ fun RecipesApp(
                             launchSingleTop = true
                             restoreState = true
                         }
-                    }
+                    },
+                    favoriteCount = favoritesCount
                 )
             }
         ) { paddingValues ->

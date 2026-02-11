@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -57,12 +58,9 @@ fun RecipeDetailsScreen(
     } else {
         val context = LocalContext.current
         val coroutineScope = rememberCoroutineScope()
-        val favoriteManager = remember(context) { FavoriteDataStoreManager(context) }
-        var isFavorite by remember(recipe.id) { mutableStateOf(false) }
-
-        LaunchedEffect(recipe.id) {
-            isFavorite = favoriteManager.isFavorite(recipe.id)
-        }
+        val favoriteDataStoreManager = remember(context) { FavoriteDataStoreManager(context) }
+        val isFavorite by favoriteDataStoreManager.isFavoriteFlow(recipe.id)
+            .collectAsState(initial = false)
 
         val backgroundImage = rememberAsyncImagePainter(recipe.imageUrl)
         var currentPortions by rememberSaveable(recipe.id) { mutableIntStateOf(1) }
@@ -91,13 +89,10 @@ fun RecipeDetailsScreen(
                 isFavorite = isFavorite,
                 onFavoriteToggle = {
                     coroutineScope.launch {
-                        (!isFavorite).also { newValue ->
-                            if (newValue) {
-                                favoriteManager.addFavorite(recipe.id)
-                            } else {
-                                favoriteManager.removeFavorite(recipe.id)
-                            }
-                            isFavorite = newValue
+                        if (isFavorite) {
+                            favoriteDataStoreManager.removeFavorite(recipe.id)
+                        } else {
+                            favoriteDataStoreManager.addFavorite(recipe.id)
                         }
                     }
                 }
