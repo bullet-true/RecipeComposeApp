@@ -1,11 +1,10 @@
 package com.ifedorov.recipecomposeapp.ui.details
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -69,78 +68,88 @@ fun RecipeDetailsScreen(
             val multiplier = currentPortions.toDouble() / recipe.servings
             recipe.ingredients.map { it.scaled(multiplier) }
         }
-        Column(
-            modifier = modifier
+
+        LazyColumn(
+            modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            ScreenHeader(
-                title = recipe.title,
-                backgroundImage = backgroundImage,
-                showShareButton = true,
-                onShareClick = {
-                    ShareUtils.shareRecipe(
-                        context = context,
-                        recipeId = recipe.id,
-                        recipeTitle = recipe.title
-                    )
-                },
-                showFavoriteButton = true,
-                isFavorite = isFavorite,
-                onFavoriteToggle = {
-                    coroutineScope.launch {
-                        if (isFavorite) {
-                            favoriteDataStoreManager.removeFavorite(recipe.id)
-                        } else {
-                            favoriteDataStoreManager.addFavorite(recipe.id)
+            item {
+                ScreenHeader(
+                    title = recipe.title,
+                    backgroundImage = backgroundImage,
+                    showShareButton = true,
+                    onShareClick = {
+                        ShareUtils.shareRecipe(
+                            context = context,
+                            recipeId = recipe.id,
+                            recipeTitle = recipe.title
+                        )
+                    },
+                    showFavoriteButton = true,
+                    isFavorite = isFavorite,
+                    onFavoriteToggle = {
+                        coroutineScope.launch {
+                            if (isFavorite) {
+                                favoriteDataStoreManager.removeFavorite(recipe.id)
+                            } else {
+                                favoriteDataStoreManager.addFavorite(recipe.id)
+                            }
                         }
                     }
-                }
-            )
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp)
-            ) {
-                item {
-                    Text(
-                        text = stringResource(R.string.ingredients).uppercase(Locale.getDefault()),
-                        style = MaterialTheme.typography.displayLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(6.dp))
-                }
-                item {
-                    PortionsSelector(
-                        currentPortions = currentPortions,
-                        onPortionsChange = { newValue ->
-                            currentPortions = newValue
-                        }
-                    )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                item {
-                    IngredientsList(scaledIngredients)
-                }
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                item {
-                    Text(
-                        text = stringResource(R.string.method).uppercase(Locale.getDefault()),
-                        style = MaterialTheme.typography.displayLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                item {
-                    InstructionsList(recipe.method)
-                }
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+                Text(
+                    text = stringResource(R.string.ingredients).uppercase(Locale.getDefault()),
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+            item {
+                PortionsSelector(
+                    currentPortions = currentPortions,
+                    onPortionsChange = { newValue ->
+                        currentPortions = newValue
+                    },
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+                IngredientsList(
+                    ingredients = scaledIngredients,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+                Text(
+                    text = stringResource(R.string.method).uppercase(Locale.getDefault()),
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+                InstructionsList(
+                    instructions = recipe.method,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
             }
         }
     }
@@ -151,7 +160,7 @@ fun RecipeDetailsScreen(
 private fun PreviewRecipeDetailsScreen() {
     RecipeComposeAppTheme {
         RecipeDetailsScreen(
-            recipeId = RecipesRepositoryStub.getRecipeById(0)?.id ?: 0
+            recipeId = 0
         )
     }
 }

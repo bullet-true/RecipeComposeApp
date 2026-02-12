@@ -2,9 +2,10 @@ package com.ifedorov.recipecomposeapp.ui.recipes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -40,7 +41,7 @@ fun RecipesScreen(
 
     LaunchedEffect(categoryId) {
         isLoading = true
-        delay(1000)
+        delay(500)
 
         try {
             recipes = RecipesRepositoryStub.getRecipesByCategoryId(categoryId).map { it.toUiModel() }
@@ -49,35 +50,42 @@ fun RecipesScreen(
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        ScreenHeader(
-            title = categoryTitle,
-            backgroundImage = painterResource(R.drawable.img_error)
-        )
-
-        if (isLoading) {
-            Column(
+    if (isLoading) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            ScreenHeader(
+                title = categoryTitle,
+                backgroundImage = painterResource(R.drawable.img_error)
+            )
+            Box(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(items = recipes, key = { it.id }) { recipe ->
-                    RecipeItem(
-                        recipe = recipe,
-                        onRecipeClick = onRecipeClick,
-                    )
-                }
+        }
+    } else {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                ScreenHeader(
+                    title = categoryTitle,
+                    backgroundImage = painterResource(R.drawable.img_error)
+                )
+            }
+            items(items = recipes, key = { it.id }) { recipe ->
+                RecipeItem(
+                    recipe = recipe,
+                    onRecipeClick = onRecipeClick,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
             }
         }
     }
