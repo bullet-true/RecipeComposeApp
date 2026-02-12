@@ -18,7 +18,7 @@ import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 @Composable
 fun IngredientsList(
-    scaledIngredients: List<IngredientUiModel>,
+    ingredients: List<IngredientUiModel>,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -27,13 +27,13 @@ fun IngredientsList(
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            scaledIngredients.forEachIndexed { index, ingredient ->
+            ingredients.forEachIndexed { index, ingredient ->
                 IngredientItem(
                     ingredient = ingredient,
-                    modifier = modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 )
 
-                if (index != scaledIngredients.lastIndex) {
+                if (index != ingredients.lastIndex) {
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 8.dp),
                         thickness = 1.dp,
