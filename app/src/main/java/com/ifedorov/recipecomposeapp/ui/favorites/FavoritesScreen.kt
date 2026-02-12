@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -51,20 +51,18 @@ fun FavoritesScreen(
 
     val favorites by favoritesFlow.collectAsState(initial = emptyList())
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        ScreenHeader(
-            title = stringResource(R.string.favorites),
-            backgroundImage = painterResource(R.drawable.bcg_favorites)
-        )
-
-        if (favorites.isEmpty()) {
+    if (favorites.isEmpty()) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            ScreenHeader(
+                title = stringResource(R.string.favorites),
+                backgroundImage = painterResource(R.drawable.bcg_favorites)
+            )
             Box(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -74,17 +72,26 @@ fun FavoritesScreen(
                     textAlign = TextAlign.Center
                 )
             }
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(items = favorites, key = { it.id }) { recipe ->
-                    RecipeItem(
-                        recipe = recipe,
-                        onRecipeClick = onFavoriteRecipeClick,
-                    )
-                }
+        }
+    } else {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                ScreenHeader(
+                    title = stringResource(R.string.favorites),
+                    backgroundImage = painterResource(R.drawable.bcg_favorites)
+                )
+            }
+            items(items = favorites, key = { it.id }) { recipe ->
+                RecipeItem(
+                    recipe = recipe,
+                    onRecipeClick = onFavoriteRecipeClick,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
             }
         }
     }
