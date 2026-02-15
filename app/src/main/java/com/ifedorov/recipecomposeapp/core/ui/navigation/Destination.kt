@@ -1,6 +1,6 @@
 package com.ifedorov.recipecomposeapp.core.ui.navigation
 
-import com.ifedorov.recipecomposeapp.core.Constants.PARAM_RECIPE_ID
+import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
 
 sealed class Destination(val route: String) {
     object Categories: Destination("categories")

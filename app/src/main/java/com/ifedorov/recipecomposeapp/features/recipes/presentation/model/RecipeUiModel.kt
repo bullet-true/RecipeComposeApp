@@ -1,8 +1,8 @@
-package com.ifedorov.recipecomposeapp.ui.recipes.model
+package com.ifedorov.recipecomposeapp.features.recipes.presentation.model
 
 import android.os.Parcelable
 import androidx.compose.runtime.Immutable
-import com.ifedorov.recipecomposeapp.core.Constants
+import com.ifedorov.recipecomposeapp.core.utils.Constants
 import com.ifedorov.recipecomposeapp.data.model.RecipeDto
 import kotlinx.parcelize.Parcelize
 

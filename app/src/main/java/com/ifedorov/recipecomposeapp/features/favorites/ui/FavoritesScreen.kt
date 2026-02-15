@@ -1,4 +1,4 @@
-package com.ifedorov.recipecomposeapp.ui.favorites
+package com.ifedorov.recipecomposeapp.features.favorites.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -25,8 +26,8 @@ import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
-import com.ifedorov.recipecomposeapp.ui.recipes.RecipeItem
-import com.ifedorov.recipecomposeapp.ui.recipes.model.toUiModel
+import com.ifedorov.recipecomposeapp.features.recipes.ui.RecipeItem
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.toUiModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 import kotlinx.coroutines.flow.map
 
@@ -100,7 +101,7 @@ fun FavoritesScreen(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewFavoritesScreen() {
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
 
     RecipeComposeAppTheme {
         FavoritesScreen(

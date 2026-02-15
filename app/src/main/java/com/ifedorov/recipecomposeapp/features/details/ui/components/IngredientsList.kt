@@ -1,4 +1,4 @@
-package com.ifedorov.recipecomposeapp.ui.details
+package com.ifedorov.recipecomposeapp.features.details.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
-import com.ifedorov.recipecomposeapp.ui.recipes.model.IngredientUiModel
-import com.ifedorov.recipecomposeapp.ui.recipes.model.toUiModel
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.IngredientUiModel
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.toUiModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 @Composable

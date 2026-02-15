@@ -1,4 +1,4 @@
-package com.ifedorov.recipecomposeapp.core.utils
+package com.ifedorov.recipecomposeapp.core.sharedPrefs
 
 import android.content.Context
 import androidx.core.content.edit

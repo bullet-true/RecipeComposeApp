@@ -1,6 +1,6 @@
 package com.ifedorov.recipecomposeapp.core.extensions
 
-import com.ifedorov.recipecomposeapp.ui.recipes.model.IngredientUiModel
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.IngredientUiModel
 import java.math.RoundingMode
 
 object IngredientExtensions {

@@ -1,4 +1,4 @@
-package com.ifedorov.recipecomposeapp.ui.categories
+package com.ifedorov.recipecomposeapp.features.categories.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
-import com.ifedorov.recipecomposeapp.ui.categories.model.CategoryUiModel
-import com.ifedorov.recipecomposeapp.ui.categories.model.toUiModel
+import com.ifedorov.recipecomposeapp.features.categories.presentation.model.CategoryUiModel
+import com.ifedorov.recipecomposeapp.features.categories.presentation.model.toUiModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 import java.util.Locale
 
