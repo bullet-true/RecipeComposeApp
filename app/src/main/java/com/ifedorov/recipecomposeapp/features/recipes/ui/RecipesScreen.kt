@@ -1,4 +1,4 @@
-package com.ifedorov.recipecomposeapp.ui.recipes
+package com.ifedorov.recipecomposeapp.features.recipes.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
-import com.ifedorov.recipecomposeapp.ui.recipes.model.RecipeUiModel
-import com.ifedorov.recipecomposeapp.ui.recipes.model.toUiModel
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.toUiModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 import kotlinx.coroutines.delay
 

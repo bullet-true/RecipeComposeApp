@@ -22,16 +22,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.ifedorov.recipecomposeapp.core.Constants.DEEP_LINK_SCHEME
-import com.ifedorov.recipecomposeapp.core.Constants.PARAM_RECIPE_ID
+import com.ifedorov.recipecomposeapp.core.utils.Constants.DEEP_LINK_SCHEME
+import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
 import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
 import com.ifedorov.recipecomposeapp.core.ui.navigation.BottomNavigation
 import com.ifedorov.recipecomposeapp.core.ui.navigation.Destination
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
-import com.ifedorov.recipecomposeapp.ui.categories.CategoriesScreen
-import com.ifedorov.recipecomposeapp.ui.details.RecipeDetailsScreen
-import com.ifedorov.recipecomposeapp.ui.favorites.FavoritesScreen
-import com.ifedorov.recipecomposeapp.ui.recipes.RecipesScreen
+import com.ifedorov.recipecomposeapp.features.categories.ui.CategoriesScreen
+import com.ifedorov.recipecomposeapp.features.details.ui.RecipeDetailsScreen
+import com.ifedorov.recipecomposeapp.features.favorites.ui.FavoritesScreen
+import com.ifedorov.recipecomposeapp.features.recipes.ui.RecipesScreen
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 import kotlinx.coroutines.delay
 

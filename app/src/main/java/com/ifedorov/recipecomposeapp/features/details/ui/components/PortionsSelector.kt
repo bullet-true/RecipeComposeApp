@@ -1,4 +1,4 @@
-package com.ifedorov.recipecomposeapp.ui.details
+package com.ifedorov.recipecomposeapp.features.details.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

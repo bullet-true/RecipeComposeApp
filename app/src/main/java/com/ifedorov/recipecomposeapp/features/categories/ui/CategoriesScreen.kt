@@ -1,4 +1,4 @@
-package com.ifedorov.recipecomposeapp.ui.categories
+package com.ifedorov.recipecomposeapp.features.categories.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
-import com.ifedorov.recipecomposeapp.ui.categories.model.toUiModel
+import com.ifedorov.recipecomposeapp.features.categories.presentation.model.toUiModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 @Composable

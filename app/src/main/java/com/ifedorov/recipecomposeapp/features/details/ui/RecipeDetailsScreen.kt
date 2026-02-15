@@ -1,4 +1,4 @@
-package com.ifedorov.recipecomposeapp.ui.details
+package com.ifedorov.recipecomposeapp.features.details.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
@@ -30,8 +30,11 @@ import com.ifedorov.recipecomposeapp.core.extensions.IngredientExtensions.scaled
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
 import com.ifedorov.recipecomposeapp.core.utils.ShareUtils
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
-import com.ifedorov.recipecomposeapp.ui.recipes.model.RecipeUiModel
-import com.ifedorov.recipecomposeapp.ui.recipes.model.toUiModel
+import com.ifedorov.recipecomposeapp.features.details.ui.components.IngredientsList
+import com.ifedorov.recipecomposeapp.features.details.ui.components.InstructionsList
+import com.ifedorov.recipecomposeapp.features.details.ui.components.PortionsSelector
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.toUiModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 import kotlinx.coroutines.launch
 import java.util.Locale
