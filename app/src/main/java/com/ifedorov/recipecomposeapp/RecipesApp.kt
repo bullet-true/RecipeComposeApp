@@ -1,6 +1,7 @@
 package com.ifedorov.recipecomposeapp
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,11 +23,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.ifedorov.recipecomposeapp.core.utils.Constants.DEEP_LINK_SCHEME
-import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
 import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
 import com.ifedorov.recipecomposeapp.core.ui.navigation.BottomNavigation
 import com.ifedorov.recipecomposeapp.core.ui.navigation.Destination
+import com.ifedorov.recipecomposeapp.core.utils.Constants.DEEP_LINK_SCHEME
+import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.categories.ui.CategoriesScreen
 import com.ifedorov.recipecomposeapp.features.details.ui.RecipeDetailsScreen
@@ -112,8 +113,12 @@ fun RecipesApp(
                 ) {
                     composable(Destination.Categories.route) {
                         CategoriesScreen(
-                            onCategoryClick = { id, title ->
-                                navController.navigate(Destination.Recipes.createRoute(id, title))
+                            onCategoryClick = { id, title, imageUrl ->
+                                navController.navigate(
+                                    Destination.Recipes.createRoute(
+                                        id, title, imageUrl
+                                    )
+                                )
                             }
                         )
                     }
@@ -132,16 +137,25 @@ fun RecipesApp(
                         route = Destination.Recipes.route,
                         arguments = listOf(
                             navArgument("categoryId") { type = NavType.IntType },
-                            navArgument("categoryTitle") { type = NavType.StringType }
+                            navArgument("categoryTitle") { type = NavType.StringType },
+                            navArgument("categoryImageUrl") { type = NavType.StringType }
                         )
                     ) { backStackEntry ->
                         val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
-                        val categoryTitle =
-                            backStackEntry.arguments?.getString("categoryTitle") ?: "Unknown title"
+                        val categoryTitle = backStackEntry.arguments
+                            ?.getString("categoryTitle")
+                            ?.let { Uri.decode(it) }
+                            ?: "Unknown title"
+
+                        val categoryImageUrl = backStackEntry.arguments
+                            ?.getString("categoryImageUrl")
+                            ?.let { Uri.decode(it) }
+                            ?: ""
 
                         RecipesScreen(
                             categoryId = categoryId,
                             categoryTitle = categoryTitle,
+                            categoryImageUrl = categoryImageUrl,
                             onRecipeClick = { recipeId ->
                                 navController.navigate(
                                     Destination.RecipeDetails.createRoute(recipeId)

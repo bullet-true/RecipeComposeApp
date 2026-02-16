@@ -18,10 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.ifedorov.recipecomposeapp.R
+import coil3.compose.rememberAsyncImagePainter
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
@@ -33,11 +32,13 @@ import kotlinx.coroutines.delay
 fun RecipesScreen(
     categoryId: Int,
     categoryTitle: String,
+    categoryImageUrl: String,
     modifier: Modifier = Modifier,
     onRecipeClick: (Int) -> Unit
 ) {
     var recipes by remember { mutableStateOf<List<RecipeUiModel>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
+    val headerImage = rememberAsyncImagePainter(categoryImageUrl)
 
     LaunchedEffect(categoryId) {
         isLoading = true
@@ -58,7 +59,7 @@ fun RecipesScreen(
         ) {
             ScreenHeader(
                 title = categoryTitle,
-                backgroundImage = painterResource(R.drawable.img_error)
+                backgroundImage = headerImage
             )
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -77,7 +78,7 @@ fun RecipesScreen(
             item {
                 ScreenHeader(
                     title = categoryTitle,
-                    backgroundImage = painterResource(R.drawable.img_error)
+                    backgroundImage = headerImage
                 )
             }
             items(items = recipes, key = { it.id }) { recipe ->
@@ -98,6 +99,7 @@ private fun PreviewRecipesScreen() {
         RecipesScreen(
             categoryId = 0,
             categoryTitle = "Бургеры",
+            categoryImageUrl = "file:///android_asset/burger.png",
             onRecipeClick = {}
         )
     }
