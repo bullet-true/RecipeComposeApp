@@ -12,4 +12,6 @@
     <string name="share_recipe_text">Попробуй этот рецепт: %1$s\n%2$s</string>
     <string name="recipe_not_found">Рецепт не найден</string>
     <string name="empty_favorites_text">Вы еще не добавили ни одного рецепта в избранное</string>
+    <string name="downloading_error">Ошибка загрузки: %1$s</string>
+    <string name="there_are_no_recipes">В этой категории пока нет рецептов</string>
 </resources>
