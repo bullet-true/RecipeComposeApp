@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -13,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices.PIXEL_7
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -30,7 +28,6 @@ import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_ID
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_IMAGE_URL
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_TITLE
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
-import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.categories.ui.CategoriesScreen
 import com.ifedorov.recipecomposeapp.features.details.ui.RecipeDetailsScreen
 import com.ifedorov.recipecomposeapp.features.favorites.ui.FavoritesScreen
@@ -126,8 +123,6 @@ fun RecipesApp(
                     }
                     composable(Destination.Favorites.route) {
                         FavoritesScreen(
-                            repository = RecipesRepositoryStub,
-                            dataStoreManager = favoriteDataStoreManager,
                             onFavoriteRecipeClick = { recipeId ->
                                 navController.navigate(
                                     Destination.RecipeDetails.createRoute(recipeId)
@@ -154,13 +149,8 @@ fun RecipesApp(
                     composable(
                         route = Destination.RecipeDetails.route,
                         arguments = listOf(navArgument(PARAM_RECIPE_ID) { type = NavType.IntType })
-                    ) { backStackEntry ->
-                        val recipeId = backStackEntry.arguments?.getInt(PARAM_RECIPE_ID)
-                        if (recipeId != null) {
-                            RecipeDetailsScreen(recipeId)
-                        } else {
-                            Text(stringResource(R.string.recipe_not_found))
-                        }
+                    ) {
+                        RecipeDetailsScreen()
                     }
                 }
             }
