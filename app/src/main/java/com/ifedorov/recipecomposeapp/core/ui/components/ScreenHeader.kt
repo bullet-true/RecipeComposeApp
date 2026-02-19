@@ -58,7 +58,7 @@ fun ScreenHeader(
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 16.dp, bottom = 16.dp, end = 46.dp),
+                .padding(start = 16.dp, bottom = 16.dp, end = 72.dp),
             shape = RoundedCornerShape(8.dp),
             color = MaterialTheme.colorScheme.background
         ) {

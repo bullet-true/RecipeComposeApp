@@ -1,7 +1,6 @@
 package com.ifedorov.recipecomposeapp
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,6 +26,9 @@ import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
 import com.ifedorov.recipecomposeapp.core.ui.navigation.BottomNavigation
 import com.ifedorov.recipecomposeapp.core.ui.navigation.Destination
 import com.ifedorov.recipecomposeapp.core.utils.Constants.DEEP_LINK_SCHEME
+import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_ID
+import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_IMAGE_URL
+import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_TITLE
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.categories.ui.CategoriesScreen
@@ -136,26 +138,12 @@ fun RecipesApp(
                     composable(
                         route = Destination.Recipes.route,
                         arguments = listOf(
-                            navArgument("categoryId") { type = NavType.IntType },
-                            navArgument("categoryTitle") { type = NavType.StringType },
-                            navArgument("categoryImageUrl") { type = NavType.StringType }
+                            navArgument(PARAM_CATEGORY_ID) { type = NavType.IntType },
+                            navArgument(PARAM_CATEGORY_TITLE) { type = NavType.StringType },
+                            navArgument(PARAM_CATEGORY_IMAGE_URL) { type = NavType.StringType }
                         )
-                    ) { backStackEntry ->
-                        val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
-                        val categoryTitle = backStackEntry.arguments
-                            ?.getString("categoryTitle")
-                            ?.let { Uri.decode(it) }
-                            ?: "Unknown title"
-
-                        val categoryImageUrl = backStackEntry.arguments
-                            ?.getString("categoryImageUrl")
-                            ?.let { Uri.decode(it) }
-                            ?: ""
-
+                    ) {
                         RecipesScreen(
-                            categoryId = categoryId,
-                            categoryTitle = categoryTitle,
-                            categoryImageUrl = categoryImageUrl,
                             onRecipeClick = { recipeId ->
                                 navController.navigate(
                                     Destination.RecipeDetails.createRoute(recipeId)

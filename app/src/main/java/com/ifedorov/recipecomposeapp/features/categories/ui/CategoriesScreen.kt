@@ -62,7 +62,7 @@ fun CategoriesScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Ошибка загрузки: ${uiState.error ?: ""}",
+                        text = stringResource(R.string.downloading_error, uiState.error ?: ""),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
