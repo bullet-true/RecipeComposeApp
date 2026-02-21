@@ -1,5 +1,8 @@
 package com.ifedorov.recipecomposeapp.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CategoryDto(
     val id: Int,
     val title: String,
