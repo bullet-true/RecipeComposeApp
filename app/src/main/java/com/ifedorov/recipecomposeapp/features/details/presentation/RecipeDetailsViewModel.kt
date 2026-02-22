@@ -7,32 +7,43 @@ import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
+import com.ifedorov.recipecomposeapp.core.extensions.IngredientExtensions.scaled
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.details.presentation.model.RecipeDetailsUiState
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.IngredientUiModel
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RecipeDetailsViewModel(
     application: Application,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
 
     private val favoriteDataStoreManager = FavoriteDataStoreManager(application)
 
-    private val _uiState = MutableStateFlow(RecipeDetailsUiState())
-    val uiState: StateFlow<RecipeDetailsUiState> = _uiState.asStateFlow()
-
     private val recipeId: Int = savedStateHandle.get<Int>(PARAM_RECIPE_ID) ?: 0
+
+    private val _uiState = MutableStateFlow(RecipeDetailsUiState())
+    val uiState: StateFlow<RecipeDetailsUiState> = _uiState
+        .combine(favoriteDataStoreManager.isFavoriteFlow(recipeId)) { currentState, isFavorite ->
+            currentState.copy(isFavorite = isFavorite)
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            _uiState.value
+        )
 
     init {
         loadRecipe()
-        observeFavorite()
     }
 
     fun toggleFavorite() {
@@ -46,7 +57,14 @@ class RecipeDetailsViewModel(
     }
 
     fun updatePortions(newValue: Int) {
-        _uiState.update { it.copy(currentPortions = newValue) }
+        _uiState.update { currentState ->
+            val scaledIngredients = currentState.recipe?.scaleIngredients(newValue).orEmpty()
+
+            currentState.copy(
+                currentPortions = newValue,
+                scaledIngredients = scaledIngredients
+            )
+        }
     }
 
     private fun loadRecipe() {
@@ -63,7 +81,15 @@ class RecipeDetailsViewModel(
                         )
                     }
                 } else {
-                    _uiState.update { it.copy(recipe = recipe, isLoading = false) }
+                    val scaledIngredients = recipe.scaleIngredients(_uiState.value.currentPortions)
+
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            recipe = recipe,
+                            scaledIngredients = scaledIngredients,
+                            isLoading = false
+                        )
+                    }
                 }
 
             } catch (e: Exception) {
@@ -77,15 +103,8 @@ class RecipeDetailsViewModel(
         }
     }
 
-    private fun observeFavorite() {
-        viewModelScope.launch {
-            favoriteDataStoreManager.isFavoriteFlow(recipeId)
-                .catch { e ->
-                    _uiState.update { it.copy(error = e.message) }
-                }
-                .collect { isFavorite ->
-                    _uiState.update { it.copy(isFavorite = isFavorite) }
-                }
-        }
+    private fun RecipeUiModel.scaleIngredients(portions: Int): List<IngredientUiModel> {
+        val multiplier = portions.toDouble() / servings.coerceAtLeast(1)
+        return ingredients.map { it.scaled(multiplier) }
     }
 }
