@@ -12,14 +12,16 @@ import androidx.compose.runtime.setValue
 import com.ifedorov.recipecomposeapp.data.model.CategoryDto
 import com.ifedorov.recipecomposeapp.data.model.RecipeDto
 import kotlinx.serialization.json.Json
-import java.net.HttpURLConnection
-import java.net.URL
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.concurrent.thread
 
 class MainActivity : ComponentActivity() {
     private var deepLinkIntent by mutableStateOf<Intent?>(null)
     private val threadPool: ExecutorService = Executors.newFixedThreadPool(10)
+    private val okHttpClient = OkHttpClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,26 +37,22 @@ class MainActivity : ComponentActivity() {
 
         Log.i("!!!", "Метод onCreate() выполняется на потоке: ${Thread.currentThread().name}")
 
-        threadPool.execute {
+        thread {
             Log.i("!!!", "Категории: Выполняю запрос на потоке: ${Thread.currentThread().name}")
 
-            var categoriesConnection: HttpURLConnection? = null
             val json = Json { ignoreUnknownKeys = true }
 
             try {
-                val url = URL("https://recipes.androidsprint.ru/api/category")
-                categoriesConnection = url.openConnection() as? HttpURLConnection
+                val request = Request.Builder()
+                    .url("https://recipes.androidsprint.ru/api/category")
+                    .build()
 
-                val jsonBody = categoriesConnection?.getInputStream()?.let { inputStream ->
-                    inputStream.use { stream ->
-                        stream.bufferedReader().use { reader ->
-                            reader.readText()
-                        }
-                    }
-                }
+                val response = okHttpClient.newCall(request).execute()
+                val jsonBody = response.body?.string()
 
-                Log.i("!!!", "Response code: ${categoriesConnection?.responseCode}")
-                Log.i("!!!", "Response message: ${categoriesConnection?.responseMessage}")
+
+                Log.i("!!!", "Response code: ${response.code}")
+                Log.i("!!!", "Response message: ${response.message}")
                 Log.i("!!!", "Body: $jsonBody")
 
                 if (jsonBody != null) {
@@ -65,25 +63,17 @@ class MainActivity : ComponentActivity() {
                         Log.i("!!!", category.title)
 
                         threadPool.execute {
-                            var recipesConnection: HttpURLConnection? = null
-
                             try {
-                                val url = URL("https://recipes.androidsprint.ru/api/category/${category.id}/recipes")
+                                val request = Request.Builder()
+                                    .url("https://recipes.androidsprint.ru/api/category/${category.id}/recipes")
+                                    .build()
 
-                                recipesConnection = url.openConnection() as? HttpURLConnection
-                                recipesConnection?.connect()
+                                val response = okHttpClient.newCall(request).execute()
+                                val recipesJsonBody = response.body?.string()
 
-                                val recipesJson =
-                                    recipesConnection?.getInputStream()?.let { inputStream ->
-                                        inputStream.use { stream ->
-                                            stream.bufferedReader().use { reader ->
-                                                reader.readText()
-                                            }
-                                        }
-                                    }
-
-                                if (recipesJson != null) {
-                                    val recipes = json.decodeFromString<List<RecipeDto>>(recipesJson)
+                                if (recipesJsonBody != null) {
+                                    val recipes =
+                                        json.decodeFromString<List<RecipeDto>>(recipesJsonBody)
 
                                     Log.i(
                                         "Pool",
@@ -93,9 +83,6 @@ class MainActivity : ComponentActivity() {
 
                             } catch (e: Exception) {
                                 Log.i("!!!", "Recipes connection error: $e")
-
-                            } finally {
-                                recipesConnection?.disconnect()
                             }
                         }
                     }
@@ -103,9 +90,6 @@ class MainActivity : ComponentActivity() {
 
             } catch (e: Exception) {
                 Log.i("!!!", "Connection error: $e")
-
-            } finally {
-                categoriesConnection?.disconnect()
             }
         }
     }

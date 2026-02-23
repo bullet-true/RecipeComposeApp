@@ -72,4 +72,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(platform(libs.squareup.okhttp.bom))
+    implementation(libs.squareup.okhttp)
 }
