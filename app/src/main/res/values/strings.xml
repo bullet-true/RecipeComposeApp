@@ -14,4 +14,5 @@
     <string name="empty_favorites_text">Вы еще не добавили ни одного рецепта в избранное</string>
     <string name="downloading_error">Ошибка загрузки: %1$s</string>
     <string name="there_are_no_recipes">В этой категории пока нет рецептов</string>
+    <string name="downloading_error_or_list_is_empty">Список пустой или ошибка загрузки</string>
 </resources>

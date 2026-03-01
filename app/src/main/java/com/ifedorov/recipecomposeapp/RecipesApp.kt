@@ -21,6 +21,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
+import com.ifedorov.recipecomposeapp.core.network.NetworkConfig.BASE_URL
+import com.ifedorov.recipecomposeapp.core.network.api.RecipesApiService
 import com.ifedorov.recipecomposeapp.core.ui.navigation.BottomNavigation
 import com.ifedorov.recipecomposeapp.core.ui.navigation.Destination
 import com.ifedorov.recipecomposeapp.core.utils.Constants.DEEP_LINK_SCHEME
@@ -28,12 +30,19 @@ import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_ID
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_IMAGE_URL
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_TITLE
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
+import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
+import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryImpl
 import com.ifedorov.recipecomposeapp.features.categories.ui.CategoriesScreen
 import com.ifedorov.recipecomposeapp.features.details.ui.RecipeDetailsScreen
 import com.ifedorov.recipecomposeapp.features.favorites.ui.FavoritesScreen
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.RecipesViewModel
 import com.ifedorov.recipecomposeapp.features.recipes.ui.RecipesScreen
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 import kotlinx.coroutines.delay
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 @Composable
 fun RecipesApp(
@@ -44,6 +53,23 @@ fun RecipesApp(
     val favoriteDataStoreManager = remember(context) { FavoriteDataStoreManager(context) }
     val favoritesCount by favoriteDataStoreManager.getFavoriteCountFlow()
         .collectAsState(initial = 0)
+
+    val json: Json = remember {
+        Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+        }
+    }
+
+    val api: RecipesApiService = remember {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+            .create(RecipesApiService::class.java)
+    }
+
+    val repository: RecipesRepository = remember { RecipesRepositoryImpl(api) }
 
     LaunchedEffect(deepLinkIntent) {
         deepLinkIntent?.data?.let { uri ->
@@ -112,6 +138,7 @@ fun RecipesApp(
                 ) {
                     composable(Destination.Categories.route) {
                         CategoriesScreen(
+                            repository = repository,
                             onCategoryClick = { id, title, imageUrl ->
                                 navController.navigate(
                                     Destination.Recipes.createRoute(
@@ -137,8 +164,17 @@ fun RecipesApp(
                             navArgument(PARAM_CATEGORY_TITLE) { type = NavType.StringType },
                             navArgument(PARAM_CATEGORY_IMAGE_URL) { type = NavType.StringType }
                         )
-                    ) {
+                    ) { backStackEntry ->
+                        val viewModel: RecipesViewModel = remember {
+                            RecipesViewModel(
+                                savedStateHandle = backStackEntry.savedStateHandle,
+                                repository = repository
+                            )
+                        }
+
+
                         RecipesScreen(
+                            viewModel = viewModel,
                             onRecipeClick = { recipeId ->
                                 navController.navigate(
                                     Destination.RecipeDetails.createRoute(recipeId)
