@@ -75,4 +75,7 @@ dependencies {
 
     implementation(platform(libs.squareup.okhttp.bom))
     implementation(libs.squareup.okhttp)
+
+    implementation(libs.squareup.retrofit)
+    implementation(libs.squareup.converter.kotlinx.serialization)
 }

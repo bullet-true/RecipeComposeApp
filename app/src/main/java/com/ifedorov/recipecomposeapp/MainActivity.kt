@@ -9,19 +9,28 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.ifedorov.recipecomposeapp.data.model.CategoryDto
-import com.ifedorov.recipecomposeapp.data.model.RecipeDto
+import androidx.lifecycle.lifecycleScope
+import com.ifedorov.recipecomposeapp.core.network.NetworkConfig.BASE_URL
+import com.ifedorov.recipecomposeapp.core.network.api.RecipesApiService
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import kotlin.concurrent.thread
+import okhttp3.MediaType.Companion.toMediaType
+import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 class MainActivity : ComponentActivity() {
     private var deepLinkIntent by mutableStateOf<Intent?>(null)
-    private val threadPool: ExecutorService = Executors.newFixedThreadPool(10)
-    private val okHttpClient = OkHttpClient()
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
+    private val retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+        .build()
+
+    private val retrofitService = retrofit.create(RecipesApiService::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,61 +44,29 @@ class MainActivity : ComponentActivity() {
             RecipesApp(deepLinkIntent = deepLinkIntent)
         }
 
-        Log.i("!!!", "Метод onCreate() выполняется на потоке: ${Thread.currentThread().name}")
-
-        thread {
-            Log.i("!!!", "Категории: Выполняю запрос на потоке: ${Thread.currentThread().name}")
-
-            val json = Json { ignoreUnknownKeys = true }
-
+        lifecycleScope.launch {
             try {
-                val request = Request.Builder()
-                    .url("https://recipes.androidsprint.ru/api/category")
-                    .build()
+                val categories = retrofitService.getCategories()
 
-                val response = okHttpClient.newCall(request).execute()
-                val jsonBody = response.body?.string()
+                Log.i("!!!", "Categories: $categories")
+                Log.i("!!!", "Category count: ${categories.size}")
 
+                categories.map { category ->
+                    launch {
+                        Log.i("!!!", "Категория: ${category.title}")
 
-                Log.i("!!!", "Response code: ${response.code}")
-                Log.i("!!!", "Response message: ${response.message}")
-                Log.i("!!!", "Body: $jsonBody")
+                        try {
+                            val recipes = retrofitService.getRecipesByCategoryId(category.id)
+                            Log.i("!!!", "Рецепт: ${category.title} - ${recipes.size} рецептов")
 
-                if (jsonBody != null) {
-                    val categories = json.decodeFromString<List<CategoryDto>>(jsonBody)
-                    Log.i("!!!", "Category count: ${categories.size}")
-
-                    categories.forEach { category ->
-                        Log.i("!!!", category.title)
-
-                        threadPool.execute {
-                            try {
-                                val request = Request.Builder()
-                                    .url("https://recipes.androidsprint.ru/api/category/${category.id}/recipes")
-                                    .build()
-
-                                val response = okHttpClient.newCall(request).execute()
-                                val recipesJsonBody = response.body?.string()
-
-                                if (recipesJsonBody != null) {
-                                    val recipes =
-                                        json.decodeFromString<List<RecipeDto>>(recipesJsonBody)
-
-                                    Log.i(
-                                        "Pool",
-                                        "Рецепты на потоке ${Thread.currentThread().name}: ${category.title} - ${recipes.size} рецептов"
-                                    )
-                                }
-
-                            } catch (e: Exception) {
-                                Log.i("!!!", "Recipes connection error: $e")
-                            }
+                        } catch (e: Exception) {
+                            Log.e("!!!", "Ошибка загрузки рецептов для ${category.title}", e)
                         }
                     }
-                }
+                }.joinAll()
 
             } catch (e: Exception) {
-                Log.i("!!!", "Connection error: $e")
+                Log.e("!!!", "Ошибка загрузки категорий", e)
             }
         }
     }
@@ -101,10 +78,5 @@ class MainActivity : ComponentActivity() {
             deepLinkIntent = intent
         }
         setIntent(intent)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        threadPool.shutdown()
     }
 }
