@@ -21,19 +21,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.SavedStateHandle
 import coil3.compose.rememberAsyncImagePainter
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
+import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_ID
+import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_IMAGE_URL
+import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_TITLE
+import com.ifedorov.recipecomposeapp.data.model.CategoryDto
+import com.ifedorov.recipecomposeapp.data.model.RecipeDto
+import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.RecipesViewModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 @Composable
 fun RecipesScreen(
+    viewModel: RecipesViewModel,
     modifier: Modifier = Modifier,
     onRecipeClick: (Int) -> Unit
 ) {
-    val viewModel: RecipesViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     val headerImage = rememberAsyncImagePainter(uiState.categoryImageUrl)
 
@@ -77,7 +83,7 @@ fun RecipesScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = stringResource(R.string.there_are_no_recipes),
+                        text = stringResource(R.string.downloading_error_or_list_is_empty),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -107,8 +113,26 @@ fun RecipesScreen(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewRecipesScreen() {
+    val fakeRepository: RecipesRepository = object : RecipesRepository {
+        override suspend fun getCategories() = emptyList<CategoryDto>()
+        override suspend fun getRecipesByCategory(categoryId: Int) = emptyList<RecipeDto>()
+        override suspend fun getRecipe(recipeId: Int) = throw NotImplementedError()
+    }
+
+    val fakeViewModel = RecipesViewModel(
+        savedStateHandle = SavedStateHandle(
+            mapOf(
+                PARAM_CATEGORY_ID to 1,
+                PARAM_CATEGORY_TITLE to "Category",
+                PARAM_CATEGORY_IMAGE_URL to ""
+            )
+        ),
+        repository = fakeRepository
+    )
+
     RecipeComposeAppTheme {
         RecipesScreen(
+            viewModel = fakeViewModel,
             onRecipeClick = {}
         )
     }
