@@ -23,13 +23,23 @@ class CategoriesViewModel(private val repository: RecipesRepository) : ViewModel
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            val categories = repository.getCategories().map { it.toUiModel() }
+            try {
+                val categories = repository.getCategories().map { it.toUiModel() }
 
-            _uiState.update { currentState ->
-                currentState.copy(
-                    categories = categories,
-                    isLoading = false
-                )
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        categories = categories,
+                        isLoading = false
+                    )
+                }
+
+            } catch (e: Exception) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        error = e.message
+                    )
+                }
             }
         }
     }
