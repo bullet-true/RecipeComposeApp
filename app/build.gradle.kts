@@ -39,6 +39,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -75,6 +76,7 @@ dependencies {
 
     implementation(platform(libs.squareup.okhttp.bom))
     implementation(libs.squareup.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
 
     implementation(libs.squareup.retrofit)
     implementation(libs.squareup.converter.kotlinx.serialization)
