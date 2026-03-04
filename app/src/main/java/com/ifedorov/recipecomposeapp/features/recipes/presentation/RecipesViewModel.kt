@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class RecipesViewModel(
     savedStateHandle: SavedStateHandle,
-    val repository: RecipesRepository
+    private val repository: RecipesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RecipesUiState())
@@ -49,13 +49,23 @@ class RecipesViewModel(
                 )
             }
 
-            val recipes = repository.getRecipesByCategory(categoryId).map { it.toUiModel() }
+            try {
+                val recipes = repository.getRecipesByCategory(categoryId).map { it.toUiModel() }
 
-            _uiState.update { currentState ->
-                currentState.copy(
-                    recipes = recipes,
-                    isLoading = false
-                )
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        recipes = recipes,
+                        isLoading = false
+                    )
+                }
+
+            } catch (e: Exception) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        error = e.message
+                    )
+                }
             }
         }
     }
