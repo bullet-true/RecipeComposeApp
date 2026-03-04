@@ -24,7 +24,7 @@ fun RecipeDto.toUiModel(isFavorite: Boolean = false) = RecipeUiModel(
     imageUrl = if (imageUrl.startsWith(prefix = "http", ignoreCase = true)) {
         imageUrl
     } else {
-        Constants.ASSETS_URI_PREFIX + imageUrl
+        Constants.IMAGES_BASE_URL + imageUrl
     },
     ingredients = ingredients.map { it.toUiModel() },
     method = method,
