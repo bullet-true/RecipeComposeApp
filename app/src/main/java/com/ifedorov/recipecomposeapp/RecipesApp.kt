@@ -66,7 +66,11 @@ fun RecipesApp(
 
     val logging = remember {
         HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
         }
     }
 
@@ -75,7 +79,7 @@ fun RecipesApp(
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
-            .apply { if (BuildConfig.DEBUG) addInterceptor(logging) }
+            .addInterceptor(logging)
             .build()
     }
 
