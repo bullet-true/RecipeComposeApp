@@ -29,8 +29,8 @@ import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_ID
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_IMAGE_URL
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_TITLE
 import com.ifedorov.recipecomposeapp.data.model.CategoryDto
-import com.ifedorov.recipecomposeapp.data.model.RecipeDto
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
+import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.RecipesViewModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
@@ -115,15 +115,17 @@ fun RecipesScreen(
 private fun PreviewRecipesScreen() {
     val fakeRepository: RecipesRepository = object : RecipesRepository {
         override suspend fun getCategories() = emptyList<CategoryDto>()
-        override suspend fun getRecipesByCategory(categoryId: Int) = emptyList<RecipeDto>()
+        override suspend fun getRecipesByCategory(categoryId: Int) =
+            RecipesRepositoryStub.getRecipesByCategoryId(0)
+
         override suspend fun getRecipe(recipeId: Int) = throw NotImplementedError()
     }
 
     val fakeViewModel = RecipesViewModel(
         savedStateHandle = SavedStateHandle(
             mapOf(
-                PARAM_CATEGORY_ID to 1,
-                PARAM_CATEGORY_TITLE to "Category",
+                PARAM_CATEGORY_ID to 0,
+                PARAM_CATEGORY_TITLE to "Бургеры",
                 PARAM_CATEGORY_IMAGE_URL to ""
             )
         ),

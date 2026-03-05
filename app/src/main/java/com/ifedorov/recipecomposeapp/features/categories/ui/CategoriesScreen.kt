@@ -25,9 +25,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
-import com.ifedorov.recipecomposeapp.data.model.CategoryDto
 import com.ifedorov.recipecomposeapp.data.model.RecipeDto
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
+import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.categories.presentation.CategoriesViewModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
@@ -123,7 +123,7 @@ fun CategoriesScreen(
 @Composable
 private fun PreviewCategoriesScreen() {
     val fakeRepository: RecipesRepository = object : RecipesRepository {
-        override suspend fun getCategories() = emptyList<CategoryDto>()
+        override suspend fun getCategories() = RecipesRepositoryStub.getCategories()
         override suspend fun getRecipesByCategory(categoryId: Int) = emptyList<RecipeDto>()
         override suspend fun getRecipe(recipeId: Int) = throw NotImplementedError()
     }
