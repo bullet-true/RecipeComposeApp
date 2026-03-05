@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
 import com.ifedorov.recipecomposeapp.data.model.CategoryDto
-import com.ifedorov.recipecomposeapp.data.model.RecipeDto
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
+import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.favorites.presentation.FavoritesViewModel
 import com.ifedorov.recipecomposeapp.features.recipes.ui.RecipeItem
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
@@ -124,7 +124,9 @@ private fun PreviewFavoritesScreen() {
 
     val fakeRepository: RecipesRepository = object : RecipesRepository {
         override suspend fun getCategories() = emptyList<CategoryDto>()
-        override suspend fun getRecipesByCategory(categoryId: Int) = emptyList<RecipeDto>()
+        override suspend fun getRecipesByCategory(categoryId: Int) =
+            RecipesRepositoryStub.getRecipesByCategoryId(0)
+
         override suspend fun getRecipe(recipeId: Int) = throw NotImplementedError()
     }
 

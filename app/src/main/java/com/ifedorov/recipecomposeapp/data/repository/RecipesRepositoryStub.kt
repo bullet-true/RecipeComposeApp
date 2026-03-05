@@ -78,5 +78,5 @@ object RecipesRepositoryStub {
         return recipes.filter { it.categoryIds.contains(categoryId) }
     }
 
-    fun getRecipeById(recipeId: Int): RecipeDto? = recipes.find { it.id == recipeId }
+    fun getRecipeById(recipeId: Int): RecipeDto = recipes.find { it.id == recipeId } ?: recipes.first()
 }

@@ -29,6 +29,7 @@ import com.ifedorov.recipecomposeapp.core.utils.ShareUtils
 import com.ifedorov.recipecomposeapp.data.model.CategoryDto
 import com.ifedorov.recipecomposeapp.data.model.RecipeDto
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
+import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.details.presentation.RecipeDetailsViewModel
 import com.ifedorov.recipecomposeapp.features.details.ui.components.IngredientsList
 import com.ifedorov.recipecomposeapp.features.details.ui.components.InstructionsList
@@ -182,7 +183,7 @@ private fun PreviewRecipeDetailsScreen() {
     val fakeRepository: RecipesRepository = object : RecipesRepository {
         override suspend fun getCategories() = emptyList<CategoryDto>()
         override suspend fun getRecipesByCategory(categoryId: Int) = emptyList<RecipeDto>()
-        override suspend fun getRecipe(recipeId: Int) = throw NotImplementedError()
+        override suspend fun getRecipe(recipeId: Int) = RecipesRepositoryStub.getRecipeById(0)
     }
 
     val fakeViewModel = RecipeDetailsViewModel(
