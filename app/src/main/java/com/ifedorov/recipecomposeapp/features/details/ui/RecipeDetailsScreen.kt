@@ -20,11 +20,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.SavedStateHandle
 import coil3.compose.rememberAsyncImagePainter
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
+import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
 import com.ifedorov.recipecomposeapp.core.utils.ShareUtils
+import com.ifedorov.recipecomposeapp.data.model.CategoryDto
+import com.ifedorov.recipecomposeapp.data.model.RecipeDto
+import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
 import com.ifedorov.recipecomposeapp.features.details.presentation.RecipeDetailsViewModel
 import com.ifedorov.recipecomposeapp.features.details.ui.components.IngredientsList
 import com.ifedorov.recipecomposeapp.features.details.ui.components.InstructionsList
@@ -34,10 +38,11 @@ import java.util.Locale
 
 @Composable
 fun RecipeDetailsScreen(
-    modifier: Modifier = Modifier
+    viewModel: RecipeDetailsViewModel,
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val viewModel: RecipeDetailsViewModel = viewModel()
+
     val uiState by viewModel.uiState.collectAsState()
 
     when {
@@ -171,7 +176,26 @@ fun RecipeDetailsScreen(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewRecipeDetailsScreen() {
+    val context = LocalContext.current
+    val application = context.applicationContext as android.app.Application
+
+    val fakeRepository: RecipesRepository = object : RecipesRepository {
+        override suspend fun getCategories() = emptyList<CategoryDto>()
+        override suspend fun getRecipesByCategory(categoryId: Int) = emptyList<RecipeDto>()
+        override suspend fun getRecipe(recipeId: Int) = throw NotImplementedError()
+    }
+
+    val fakeViewModel = RecipeDetailsViewModel(
+        application = application,
+        savedStateHandle = SavedStateHandle(
+            mapOf(PARAM_RECIPE_ID to 1)
+        ),
+        repository = fakeRepository
+    )
+
     RecipeComposeAppTheme {
-        RecipeDetailsScreen()
+        RecipeDetailsScreen(
+            viewModel = fakeViewModel,
+        )
     }
 }

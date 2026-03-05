@@ -9,7 +9,7 @@ import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
 import com.ifedorov.recipecomposeapp.core.extensions.IngredientExtensions.scaled
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
-import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
+import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
 import com.ifedorov.recipecomposeapp.features.details.presentation.model.RecipeDetailsUiState
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.IngredientUiModel
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
 
 class RecipeDetailsViewModel(
     application: Application,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val repository: RecipesRepository,
 ) : AndroidViewModel(application) {
 
     private val favoriteDataStoreManager = FavoriteDataStoreManager(application)
@@ -48,7 +49,7 @@ class RecipeDetailsViewModel(
 
     fun toggleFavorite() {
         viewModelScope.launch {
-            if (_uiState.value.isFavorite) {
+            if (uiState.value.isFavorite) {
                 favoriteDataStoreManager.removeFavorite(recipeId)
             } else {
                 favoriteDataStoreManager.addFavorite(recipeId)
@@ -72,7 +73,7 @@ class RecipeDetailsViewModel(
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             try {
-                val recipe = RecipesRepositoryStub.getRecipeById(recipeId)?.toUiModel()
+                val recipe = repository.getRecipe(recipeId)?.toUiModel()
                 if (recipe == null) {
                     _uiState.update { currentState ->
                         currentState.copy(

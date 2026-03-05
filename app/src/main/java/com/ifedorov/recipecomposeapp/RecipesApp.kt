@@ -1,5 +1,6 @@
 package com.ifedorov.recipecomposeapp
 
+import android.app.Application
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +34,9 @@ import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryImpl
 import com.ifedorov.recipecomposeapp.features.categories.ui.CategoriesScreen
+import com.ifedorov.recipecomposeapp.features.details.presentation.RecipeDetailsViewModel
 import com.ifedorov.recipecomposeapp.features.details.ui.RecipeDetailsScreen
+import com.ifedorov.recipecomposeapp.features.favorites.presentation.FavoritesViewModel
 import com.ifedorov.recipecomposeapp.features.favorites.ui.FavoritesScreen
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.RecipesViewModel
 import com.ifedorov.recipecomposeapp.features.recipes.ui.RecipesScreen
@@ -53,6 +56,10 @@ fun RecipesApp(
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
+    val application = remember(context) {
+        context.applicationContext as Application
+    }
+
     val favoriteDataStoreManager = remember(context) { FavoriteDataStoreManager(context) }
     val favoritesCount by favoriteDataStoreManager.getFavoriteCountFlow()
         .collectAsState(initial = 0)
@@ -172,7 +179,15 @@ fun RecipesApp(
                         )
                     }
                     composable(Destination.Favorites.route) {
+                        val viewModel: FavoritesViewModel = remember {
+                            FavoritesViewModel(
+                                application = application,
+                                repository = repository
+                            )
+                        }
+
                         FavoritesScreen(
+                            viewModel = viewModel,
                             onFavoriteRecipeClick = { recipeId ->
                                 navController.navigate(
                                     Destination.RecipeDetails.createRoute(recipeId)
@@ -195,7 +210,6 @@ fun RecipesApp(
                             )
                         }
 
-
                         RecipesScreen(
                             viewModel = viewModel,
                             onRecipeClick = { recipeId ->
@@ -208,8 +222,19 @@ fun RecipesApp(
                     composable(
                         route = Destination.RecipeDetails.route,
                         arguments = listOf(navArgument(PARAM_RECIPE_ID) { type = NavType.IntType })
-                    ) {
-                        RecipeDetailsScreen()
+                    ) { backStackEntry ->
+
+                        val viewModel: RecipeDetailsViewModel = remember {
+                            RecipeDetailsViewModel(
+                                savedStateHandle = backStackEntry.savedStateHandle,
+                                repository = repository,
+                                application = application
+                            )
+                        }
+
+                        RecipeDetailsScreen(
+                            viewModel = viewModel
+                        )
                     }
                 }
             }
