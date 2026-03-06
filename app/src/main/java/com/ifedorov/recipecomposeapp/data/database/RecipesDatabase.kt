@@ -23,6 +23,5 @@ abstract class RecipesDatabase : RoomDatabase() {
                 "recipes_database"
             ).fallbackToDestructiveMigration(false)
                 .build()
-
     }
 }
