@@ -30,6 +30,7 @@ import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.favorites.presentation.FavoritesViewModel
 import com.ifedorov.recipecomposeapp.features.recipes.ui.RecipeItem
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun FavoritesScreen(
@@ -123,9 +124,9 @@ private fun PreviewFavoritesScreen() {
     val application = context.applicationContext as android.app.Application
 
     val fakeRepository: RecipesRepository = object : RecipesRepository {
-        override suspend fun getCategories() = emptyList<CategoryDto>()
-        override suspend fun getRecipesByCategory(categoryId: Int) =
-            RecipesRepositoryStub.getRecipesByCategoryId(0)
+        override fun getCategories() = flowOf(emptyList<CategoryDto>())
+        override fun getRecipesByCategory(categoryId: Int) =
+            flowOf(RecipesRepositoryStub.getRecipesByCategoryId(0))
 
         override suspend fun getRecipe(recipeId: Int) = throw NotImplementedError()
     }

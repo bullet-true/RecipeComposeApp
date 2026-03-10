@@ -33,6 +33,7 @@ import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.RecipesViewModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun RecipesScreen(
@@ -114,9 +115,9 @@ fun RecipesScreen(
 @Composable
 private fun PreviewRecipesScreen() {
     val fakeRepository: RecipesRepository = object : RecipesRepository {
-        override suspend fun getCategories() = emptyList<CategoryDto>()
-        override suspend fun getRecipesByCategory(categoryId: Int) =
-            RecipesRepositoryStub.getRecipesByCategoryId(0)
+        override fun getCategories() = flowOf(emptyList<CategoryDto>())
+        override fun getRecipesByCategory(categoryId: Int) =
+            flowOf(RecipesRepositoryStub.getRecipesByCategoryId(0))
 
         override suspend fun getRecipe(recipeId: Int) = throw NotImplementedError()
     }
