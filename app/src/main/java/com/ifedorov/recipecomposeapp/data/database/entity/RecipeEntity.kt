@@ -10,6 +10,6 @@ data class RecipeEntity(
     val title: String,
     @ColumnInfo(name = "category_id") val categoryId: Int,
     @ColumnInfo(name = "image_url") val imageUrl: String,
-    val ingredients: String,
-    val method: String,
+    val ingredients: List<String>,
+    val method: List<String>,
 )

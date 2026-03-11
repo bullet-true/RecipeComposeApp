@@ -27,11 +27,11 @@ class RecipesViewModel(
     private val categoryId: Int = savedStateHandle.get<Int>(PARAM_CATEGORY_ID) ?: 0
     private val categoryTitle: String = savedStateHandle.get<String>(PARAM_CATEGORY_TITLE)
         ?.let { Uri.decode(it) }
-        ?: ""
+        ?: EMPTY_STRING
 
     private val categoryImageUrl: String = savedStateHandle.get<String>(PARAM_CATEGORY_IMAGE_URL)
         ?.let { Uri.decode(it) }
-        ?: ""
+        ?: EMPTY_STRING
 
     init {
         loadRecipes()
@@ -50,13 +50,14 @@ class RecipesViewModel(
             }
 
             try {
-                val recipes = repository.getRecipesByCategory(categoryId).map { it.toUiModel() }
-
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        recipes = recipes,
-                        isLoading = false
-                    )
+                repository.getRecipesByCategory(categoryId).collect { recipesDto ->
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            recipes = recipesDto.map { it.toUiModel() },
+                            isLoading = false,
+                            error = null
+                        )
+                    }
                 }
 
             } catch (e: Exception) {
@@ -68,5 +69,9 @@ class RecipesViewModel(
                 }
             }
         }
+    }
+
+    companion object {
+        private const val EMPTY_STRING = ""
     }
 }

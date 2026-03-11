@@ -31,6 +31,7 @@ import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_ID
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_IMAGE_URL
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_TITLE
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
+import com.ifedorov.recipecomposeapp.data.database.RecipesDatabase
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryImpl
 import com.ifedorov.recipecomposeapp.features.categories.ui.CategoriesScreen
@@ -99,7 +100,13 @@ fun RecipesApp(
             .create(RecipesApiService::class.java)
     }
 
-    val repository: RecipesRepository = remember { RecipesRepositoryImpl(api) }
+    val database = remember(context) {
+        RecipesDatabase.buildDatabase(context)
+    }
+
+    val repository: RecipesRepository = remember(api, database) {
+        RecipesRepositoryImpl(api, database)
+    }
 
     LaunchedEffect(deepLinkIntent) {
         deepLinkIntent?.data?.let { uri ->
