@@ -50,8 +50,7 @@ class FavoritesViewModel(
                     )
                 }
             }
-        }
-        .onStart {
+        }.onStart {
             emit(FavoritesUiState(isLoading = true))
         }.catch { e ->
             emit(

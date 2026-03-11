@@ -7,8 +7,10 @@ import com.ifedorov.recipecomposeapp.data.model.CategoryDto
 import com.ifedorov.recipecomposeapp.data.model.RecipeDto
 import com.ifedorov.recipecomposeapp.data.model.toDto
 import com.ifedorov.recipecomposeapp.data.model.toEntity
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -16,13 +18,16 @@ import kotlinx.coroutines.launch
 class RecipesRepositoryImpl(
     private val api: RecipesApiService,
     database: RecipesDatabase,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : RecipesRepository {
 
     private val categoryDao = database.categoryDao()
     private val recipeDao = database.recipeDao()
 
+    private val repositoryScope = CoroutineScope(SupervisorJob() + ioDispatcher)
+
     override fun getCategories(): Flow<List<CategoryDto>> {
-        CoroutineScope(Dispatchers.IO).launch {
+        repositoryScope.launch {
             try {
                 val categoriesFromApi = api.getCategories()
                 val categoriesToEntity = categoriesFromApi.map { it.toEntity() }
@@ -39,7 +44,7 @@ class RecipesRepositoryImpl(
 
 
     override fun getRecipesByCategory(categoryId: Int): Flow<List<RecipeDto>> {
-        CoroutineScope(Dispatchers.IO).launch {
+        repositoryScope.launch {
             try {
                 val recipesFromApi = api.getRecipesByCategoryId(categoryId)
                 val recipesToEntity = recipesFromApi.map { it.toEntity(categoryId) }
@@ -55,7 +60,7 @@ class RecipesRepositoryImpl(
     }
 
     override fun getRecipe(recipeId: Int): Flow<RecipeDto?> {
-        CoroutineScope(Dispatchers.IO).launch {
+        repositoryScope.launch {
             try {
                 val recipeFromApi = api.getRecipe(recipeId)
                 val categoryId = recipeFromApi.categoryIds.firstOrNull() ?: -1
@@ -71,7 +76,7 @@ class RecipesRepositoryImpl(
     }
 
     override fun getRecipesByIds(recipeIds: List<Int>): Flow<List<RecipeDto>> {
-        CoroutineScope(Dispatchers.IO).launch {
+        repositoryScope.launch {
             recipeIds.forEach { recipeId ->
                 try {
                     val recipeFromApi = api.getRecipe(recipeId)
