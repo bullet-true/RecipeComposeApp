@@ -119,7 +119,13 @@ private fun PreviewRecipesScreen() {
         override fun getRecipesByCategory(categoryId: Int) =
             flowOf(RecipesRepositoryStub.getRecipesByCategoryId(0))
 
-        override suspend fun getRecipe(recipeId: Int) = throw NotImplementedError()
+        override fun getRecipe(recipeId: Int) =
+            flowOf(RecipesRepositoryStub.getRecipeById(recipeId))
+
+        override fun getRecipesByIds(recipeIds: List<Int>) =
+            flowOf(recipeIds.mapNotNull { id ->
+                RecipesRepositoryStub.getRecipesByCategoryId(0).find { it.id == id }
+            })
     }
 
     val fakeViewModel = RecipesViewModel(

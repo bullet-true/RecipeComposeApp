@@ -3,9 +3,7 @@ package com.ifedorov.recipecomposeapp.features.details.presentation
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
-import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
 import com.ifedorov.recipecomposeapp.core.extensions.IngredientExtensions.scaled
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_RECIPE_ID
@@ -32,7 +30,7 @@ class RecipeDetailsViewModel(
 
     private val recipeId: Int = savedStateHandle.get<Int>(PARAM_RECIPE_ID) ?: 0
 
-    private val _uiState = MutableStateFlow(RecipeDetailsUiState())
+    private val _uiState = MutableStateFlow(RecipeDetailsUiState(isLoading = true))
     val uiState: StateFlow<RecipeDetailsUiState> = _uiState
         .combine(favoriteDataStoreManager.isFavoriteFlow(recipeId)) { currentState, isFavorite ->
             currentState.copy(isFavorite = isFavorite)
@@ -44,7 +42,44 @@ class RecipeDetailsViewModel(
         )
 
     init {
-        loadRecipe()
+        viewModelScope.launch {
+            try {
+                repository.getRecipe(recipeId).collect { recipeDto ->
+                    if (recipeDto == null) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                isLoading = true,
+                                recipe = null,
+                                scaledIngredients = emptyList(),
+                                error = null
+                            )
+                        }
+
+                    } else {
+                        val recipe = recipeDto.toUiModel()
+                        val scaledIngredients =
+                            recipe.scaleIngredients(_uiState.value.currentPortions)
+
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                recipe = recipe,
+                                scaledIngredients = scaledIngredients,
+                                isLoading = false,
+                                error = null
+                            )
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        error = e.message
+                    )
+                }
+            }
+        }
     }
 
     fun toggleFavorite() {
@@ -65,42 +100,6 @@ class RecipeDetailsViewModel(
                 currentPortions = newValue,
                 scaledIngredients = scaledIngredients
             )
-        }
-    }
-
-    private fun loadRecipe() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-
-            try {
-                val recipe = repository.getRecipe(recipeId)?.toUiModel()
-                if (recipe == null) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            isLoading = false,
-                            error = application.getString(R.string.recipe_not_found)
-                        )
-                    }
-                } else {
-                    val scaledIngredients = recipe.scaleIngredients(_uiState.value.currentPortions)
-
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            recipe = recipe,
-                            scaledIngredients = scaledIngredients,
-                            isLoading = false
-                        )
-                    }
-                }
-
-            } catch (e: Exception) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isLoading = false,
-                        error = e.message
-                    )
-                }
-            }
         }
     }
 

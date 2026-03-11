@@ -12,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class RecipesRepositoryImpl(
     private val api: RecipesApiService,
@@ -55,13 +54,37 @@ class RecipesRepositoryImpl(
         }
     }
 
-    override suspend fun getRecipe(recipeId: Int): RecipeDto =
-        withContext(Dispatchers.IO) {
+    override fun getRecipe(recipeId: Int): Flow<RecipeDto?> {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
-                api.getRecipe(recipeId)
+                val recipeFromApi = api.getRecipe(recipeId)
+                val categoryId = recipeFromApi.categoryIds.firstOrNull() ?: -1
+                recipeDao.insertRecipes(listOf(recipeFromApi.toEntity(categoryId)))
             } catch (e: Exception) {
-                Log.e("Repository", "Ошибка при получении рецепта", e)
-                throw e
+                Log.e("Repository", "Ошибка при получении рецепта из API", e)
             }
         }
+
+        return recipeDao.getRecipeById(recipeId).map { recipeEntity ->
+            recipeEntity?.toDto()
+        }
+    }
+
+    override fun getRecipesByIds(recipeIds: List<Int>): Flow<List<RecipeDto>> {
+        CoroutineScope(Dispatchers.IO).launch {
+            recipeIds.forEach { recipeId ->
+                try {
+                    val recipeFromApi = api.getRecipe(recipeId)
+                    val categoryId = recipeFromApi.categoryIds.firstOrNull() ?: -1
+                    recipeDao.insertRecipes(listOf(recipeFromApi.toEntity(categoryId)))
+                } catch (e: Exception) {
+                    Log.e("Repository", "Ошибка при получении избранного рецепта: $recipeId", e)
+                }
+            }
+        }
+
+        return recipeDao.getRecipesByIds(recipeIds).map { recipes ->
+            recipes.map { it.toDto() }
+        }
+    }
 }

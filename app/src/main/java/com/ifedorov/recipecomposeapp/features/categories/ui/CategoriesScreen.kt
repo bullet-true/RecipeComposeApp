@@ -126,7 +126,13 @@ private fun PreviewCategoriesScreen() {
     val fakeRepository: RecipesRepository = object : RecipesRepository {
         override fun getCategories() = flowOf(RecipesRepositoryStub.getCategories())
         override fun getRecipesByCategory(categoryId: Int) = flowOf(emptyList<RecipeDto>())
-        override suspend fun getRecipe(recipeId: Int) = throw NotImplementedError()
+        override fun getRecipe(recipeId: Int) =
+            flowOf(RecipesRepositoryStub.getRecipeById(recipeId))
+
+        override fun getRecipesByIds(recipeIds: List<Int>) =
+            flowOf(recipeIds.mapNotNull { id ->
+                RecipesRepositoryStub.getRecipesByCategoryId(0).find { it.id == id }
+            })
     }
 
     RecipeComposeAppTheme {
