@@ -5,12 +5,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
-import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.favorites.presentation.model.FavoritesUiState
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -25,20 +26,30 @@ class FavoritesViewModel(
     val uiState: StateFlow<FavoritesUiState> = favoriteDataStoreManager
         .getFavoriteIdsFlow()
         .map { favoriteIds ->
-            val recipes = favoriteIds.mapNotNull { idString ->
-                val id = idString.toIntOrNull()
+            favoriteIds.mapNotNull { idString -> idString.toIntOrNull() }
+        }
+        .flatMapLatest { favoriteIds ->
+            if (favoriteIds.isEmpty()) {
+                flowOf(
+                    FavoritesUiState(
+                        favoriteRecipes = emptyList(),
+                        isLoading = false,
+                        error = null
+                    )
+                )
+            } else {
+                repository.getRecipesByIds(favoriteIds).map { recipes ->
+                    val recipesById = recipes.associateBy { it.id }
 
-                id?.let {
-                    repository.getRecipe(it)?.toUiModel(isFavorite = true)
+                    FavoritesUiState(
+                        favoriteRecipes = favoriteIds.mapNotNull { id ->
+                            recipesById[id]?.toUiModel(isFavorite = true)
+                        },
+                        isLoading = false,
+                        error = null
+                    )
                 }
             }
-
-            FavoritesUiState(
-                favoriteRecipes = recipes,
-                isLoading = false,
-                error = null
-            )
-
         }.onStart {
             emit(FavoritesUiState(isLoading = true))
         }.catch { e ->

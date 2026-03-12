@@ -35,6 +35,7 @@ import com.ifedorov.recipecomposeapp.features.details.ui.components.IngredientsL
 import com.ifedorov.recipecomposeapp.features.details.ui.components.InstructionsList
 import com.ifedorov.recipecomposeapp.features.details.ui.components.PortionsSelector
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import java.util.Locale
 
@@ -184,7 +185,12 @@ private fun PreviewRecipeDetailsScreen() {
     val fakeRepository: RecipesRepository = object : RecipesRepository {
         override fun getCategories() = flowOf(emptyList<CategoryDto>())
         override fun getRecipesByCategory(categoryId: Int) = flowOf(emptyList<RecipeDto>())
-        override suspend fun getRecipe(recipeId: Int) = RecipesRepositoryStub.getRecipeById(0)
+        override fun getRecipe(recipeId: Int) = flowOf(RecipesRepositoryStub.getRecipeById(0))
+        override fun getRecipesByIds(recipeIds: List<Int>): Flow<List<RecipeDto>> = flowOf(
+            recipeIds.mapNotNull { id ->
+                RecipesRepositoryStub.getRecipesByCategoryId(0).find { it.id == id }
+            }
+        )
     }
 
     val fakeViewModel = RecipeDetailsViewModel(
