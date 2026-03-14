@@ -137,8 +137,8 @@ fun RecipesApp(
                             }
                         )
                     }
-                    composable(Destination.Favorites.route) {
-                        val viewModel: FavoritesViewModel = remember {
+                    composable(Destination.Favorites.route) { backStackEntry ->
+                        val viewModel: FavoritesViewModel = remember(backStackEntry) {
                             FavoritesViewModelFactory(
                                 application = application,
                                 repository = appContainer.recipesRepository
@@ -162,7 +162,7 @@ fun RecipesApp(
                             navArgument(PARAM_CATEGORY_IMAGE_URL) { type = NavType.StringType }
                         )
                     ) { backStackEntry ->
-                        val viewModel: RecipesViewModel = remember {
+                        val viewModel: RecipesViewModel = remember(backStackEntry) {
                             RecipesViewModelFactory(
                                 savedStateHandle = backStackEntry.savedStateHandle,
                                 repository = appContainer.recipesRepository
@@ -183,7 +183,7 @@ fun RecipesApp(
                         arguments = listOf(navArgument(PARAM_RECIPE_ID) { type = NavType.IntType })
                     ) { backStackEntry ->
 
-                        val viewModel: RecipeDetailsViewModel = remember {
+                        val viewModel: RecipeDetailsViewModel = remember(backStackEntry) {
                             RecipeDetailsViewModelFactory(
                                 application = application,
                                 savedStateHandle = backStackEntry.savedStateHandle,
