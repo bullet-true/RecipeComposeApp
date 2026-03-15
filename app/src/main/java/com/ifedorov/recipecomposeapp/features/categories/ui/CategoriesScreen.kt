@@ -15,22 +15,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
 import com.ifedorov.recipecomposeapp.data.model.RecipeDto
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
-import com.ifedorov.recipecomposeapp.di.CategoriesViewModelFactory
-import com.ifedorov.recipecomposeapp.di.RecipeApplication
 import com.ifedorov.recipecomposeapp.features.categories.presentation.CategoriesViewModel
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 import kotlinx.coroutines.flow.flowOf
@@ -38,16 +35,9 @@ import kotlinx.coroutines.flow.flowOf
 @Composable
 fun CategoriesScreen(
     modifier: Modifier = Modifier,
+    viewModel: CategoriesViewModel = hiltViewModel(),
     onCategoryClick: (Int, String, String) -> Unit
 ) {
-    val context = LocalContext.current
-    val appContainer = remember(context) {
-        (context.applicationContext as RecipeApplication).appContainer
-    }
-
-    val viewModel: CategoriesViewModel = remember {
-        CategoriesViewModelFactory(appContainer.recipesRepository).create()
-    }
 
     val uiState by viewModel.uiState.collectAsState()
 

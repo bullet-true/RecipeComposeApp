@@ -7,6 +7,7 @@ import com.ifedorov.recipecomposeapp.core.datastore.FavoriteDataStoreManager
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
 import com.ifedorov.recipecomposeapp.features.favorites.presentation.model.FavoritesUiState
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.toUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -15,8 +16,10 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-class FavoritesViewModel(
+@HiltViewModel
+class FavoritesViewModel @Inject constructor(
     application: Application,
     private val repository: RecipesRepository,
 ) : AndroidViewModel(application) {

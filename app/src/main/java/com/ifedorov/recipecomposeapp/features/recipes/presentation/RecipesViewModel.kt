@@ -10,13 +10,16 @@ import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_TITLE
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.RecipesUiState
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.toUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RecipesViewModel(
+@HiltViewModel
+class RecipesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: RecipesRepository
 ) : ViewModel() {
