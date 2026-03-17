@@ -7,18 +7,19 @@ import com.ifedorov.recipecomposeapp.data.model.CategoryDto
 import com.ifedorov.recipecomposeapp.data.model.RecipeDto
 import com.ifedorov.recipecomposeapp.data.model.toDto
 import com.ifedorov.recipecomposeapp.data.model.toEntity
+import com.ifedorov.recipecomposeapp.di.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RecipesRepositoryImpl(
+class RecipesRepositoryImpl @Inject constructor(
     private val api: RecipesApiService,
     database: RecipesDatabase,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : RecipesRepository {
 
     private val categoryDao = database.categoryDao()

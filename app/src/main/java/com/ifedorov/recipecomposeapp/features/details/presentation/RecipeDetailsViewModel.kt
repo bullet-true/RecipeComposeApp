@@ -12,6 +12,7 @@ import com.ifedorov.recipecomposeapp.features.details.presentation.model.RecipeD
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.IngredientUiModel
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.toUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,8 +20,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RecipeDetailsViewModel(
+@HiltViewModel
+class RecipeDetailsViewModel @Inject constructor(
     application: Application,
     savedStateHandle: SavedStateHandle,
     private val repository: RecipesRepository,
