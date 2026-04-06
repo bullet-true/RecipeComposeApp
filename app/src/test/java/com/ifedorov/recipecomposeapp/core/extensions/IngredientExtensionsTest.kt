@@ -58,12 +58,18 @@ class IngredientExtensionsTest {
     }
 
     private fun createIngredientUiModel(
-        name: String = "Test",
-        quantity: String = "1.0",
-        unit: String = "шт"
+        name: String = TEST_NAME,
+        quantity: String = TEST_QUANTITY,
+        unitOfMeasure: String = TEST_UNIT_OF_MEASURE
     ) = IngredientUiModel(
         name = name,
         quantity = quantity,
-        unitOfMeasure = unit
+        unitOfMeasure = unitOfMeasure
     )
+
+    companion object {
+        private const val TEST_NAME = "говяжий фарш"
+        private const val TEST_QUANTITY = "0.5"
+        private const val TEST_UNIT_OF_MEASURE = "кг"
+    }
 }
