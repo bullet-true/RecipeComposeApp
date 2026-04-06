@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import okio.IOException
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -86,7 +87,7 @@ class RecipesRepositoryTest {
         )
 
         every { categoryDao.getCategories() } returns flowOf(CATEGORY_ENTITIES)
-        coEvery { apiService.getCategories() } throws RuntimeException(API_ERROR_MESSAGE)
+        coEvery { apiService.getCategories() } throws IOException(API_ERROR_MESSAGE)
 
         repository.getCategories().test {
             advanceUntilIdle()
