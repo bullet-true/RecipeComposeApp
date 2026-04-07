@@ -1,5 +1,6 @@
 package com.ifedorov.recipecomposeapp.features.categories.presentation
 
+import app.cash.turbine.test
 import com.ifedorov.recipecomposeapp.core.utils.Constants.IMAGES_BASE_URL
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
 import fixtures.CategoryTestFixtures.createCategoryDtoList
@@ -7,10 +8,12 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -21,6 +24,7 @@ import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class CategoriesViewModelTest {
 
     private val repository = mockk<RecipesRepository>()
@@ -38,46 +42,61 @@ class CategoriesViewModelTest {
     }
 
     @Test
-    fun `loads categories from repository`() {
+    fun `loads categories from repository`() = runTest {
         val categories = createCategoryDtoList(count = TEST_LIST_SIZE)
 
         every { repository.getCategories() } returns flowOf(categories)
 
         viewModel = CategoriesViewModel(repository)
-        val state = viewModel.uiState.value
 
-        assertEquals(TEST_LIST_SIZE, state.categories.size)
-        assertFalse(state.isLoading)
-        assertEquals(TEST_ID, state.categories.first().id)
-        assertEquals(TEST_TITLE, state.categories.first().title)
-        assertEquals(TEST_DESCRIPTION, state.categories.first().description)
-        assertEquals(IMAGES_BASE_URL + TEST_IMAGE_NAME, state.categories.first().imageUrl)
-        assertEquals(null, state.error)
+        viewModel.uiState.test {
+            val state = awaitItem()
+
+            assertEquals(TEST_LIST_SIZE, state.categories.size)
+            assertFalse(state.isLoading)
+            assertEquals(TEST_ID, state.categories.first().id)
+            assertEquals(TEST_TITLE, state.categories.first().title)
+            assertEquals(TEST_DESCRIPTION, state.categories.first().description)
+            assertEquals(IMAGES_BASE_URL + TEST_IMAGE_NAME, state.categories.first().imageUrl)
+            assertEquals(null, state.error)
+
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
-    fun `shows empty list when repository returns no data`() {
+    fun `shows empty list when repository returns no data`() = runTest {
         every { repository.getCategories() } returns flowOf(emptyList())
 
         viewModel = CategoriesViewModel(repository)
-        val state = viewModel.uiState.value
 
-        assertTrue(state.categories.isEmpty())
-        assertFalse(state.isLoading)
-        assertEquals(null, state.error)
+        viewModel.uiState.test {
+            val state = awaitItem()
+
+            assertTrue(state.categories.isEmpty())
+            assertFalse(state.isLoading)
+            assertEquals(null, state.error)
+
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
-    fun `shows error when repository throws`() {
+    fun `shows error when repository throws`() = runTest {
         every { repository.getCategories() } returns flow { throw IOException(ERROR_MESSAGE) }
 
         viewModel = CategoriesViewModel(repository)
-        val state = viewModel.uiState.value
 
-        assertTrue(state.categories.isEmpty())
-        assertFalse(state.isLoading)
-        assertNotNull(state.error)
-        assertEquals(ERROR_MESSAGE, state.error)
+        viewModel.uiState.test {
+            val state = awaitItem()
+
+            assertTrue(state.categories.isEmpty())
+            assertFalse(state.isLoading)
+            assertNotNull(state.error)
+            assertEquals(ERROR_MESSAGE, state.error)
+
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     companion object {

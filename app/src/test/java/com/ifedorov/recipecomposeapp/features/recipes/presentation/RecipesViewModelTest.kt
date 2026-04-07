@@ -1,6 +1,8 @@
 package com.ifedorov.recipecomposeapp.features.recipes.presentation
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
+import app.cash.turbine.test
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_ID
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_IMAGE_URL
 import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_TITLE
@@ -9,11 +11,15 @@ import fixtures.RecipeTestFixtures.createRecipeDtoList
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -24,6 +30,7 @@ import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class RecipesViewModelTest {
 
     private val repository = mockk<RecipesRepository>()
@@ -32,64 +39,84 @@ class RecipesViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
+        mockkStatic(Uri::class)
+        every { Uri.decode(any()) } answers { firstArg<String>() }
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+        unmockkStatic(Uri::class)
         clearAllMocks()
     }
 
     @Test
-    fun `loads recipes for category`() {
+    fun `loads recipes for category`() = runTest {
         val recipes = createRecipeDtoList(TEST_LIST_SIZE)
 
         every { repository.getRecipesByCategory(TEST_CATEGORY_ID) } returns flowOf(recipes)
 
         viewModel = createViewModel()
-        val state = viewModel.uiState.value
 
-        assertEquals(TEST_LIST_SIZE, state.recipes.size)
-        assertEquals(TEST_RECIPE_ID_FIRST, state.recipes.first().id)
-        assertEquals(TEST_RECIPE_TITLE_FIRST, state.recipes.first().title)
-        assertEquals(TEST_RECIPE_ID_SECOND, state.recipes.last().id)
-        assertEquals(TEST_RECIPE_TITLE_SECOND, state.recipes.last().title)
-        assertFalse(state.isLoading)
-        assertEquals(null, state.error)
+        viewModel.uiState.test {
+            val state = awaitItem()
+
+            assertEquals(TEST_LIST_SIZE, state.recipes.size)
+            assertEquals(TEST_RECIPE_ID_FIRST, state.recipes.first().id)
+            assertEquals(TEST_RECIPE_TITLE_FIRST, state.recipes.first().title)
+            assertEquals(TEST_RECIPE_ID_SECOND, state.recipes.last().id)
+            assertEquals(TEST_RECIPE_TITLE_SECOND, state.recipes.last().title)
+            assertEquals(TEST_CATEGORY_ID, state.categoryId)
+            assertEquals(TEST_CATEGORY_TITLE, state.categoryTitle)
+            assertEquals(TEST_CATEGORY_IMAGE_URL, state.categoryImageUrl)
+            assertFalse(state.isLoading)
+            assertEquals(null, state.error)
+
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
-    fun `state reflects category title from savedState`() {
+    fun `state reflects category title from savedState`() = runTest {
         every { repository.getRecipesByCategory(TEST_CATEGORY_ID) } returns flowOf(emptyList())
 
         viewModel = createViewModel(categoryTitle = TEST_CATEGORY_TITLE)
-        val state = viewModel.uiState.value
 
-        assertEquals(TEST_CATEGORY_TITLE, state.categoryTitle)
-        assertEquals(TEST_CATEGORY_ID, state.categoryId)
-        assertEquals(TEST_CATEGORY_IMAGE_URL, state.categoryImageUrl)
-        assertTrue(state.recipes.isEmpty())
-        assertFalse(state.isLoading)
-        assertEquals(null, state.error)
+        viewModel.uiState.test {
+            val state = awaitItem()
+
+            assertEquals(TEST_CATEGORY_TITLE, state.categoryTitle)
+            assertEquals(TEST_CATEGORY_ID, state.categoryId)
+            assertEquals(TEST_CATEGORY_IMAGE_URL, state.categoryImageUrl)
+            assertTrue(state.recipes.isEmpty())
+            assertFalse(state.isLoading)
+            assertEquals(null, state.error)
+
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
-    fun `shows error when repository throws`() {
+    fun `shows error when repository throws`() = runTest {
         every { repository.getRecipesByCategory(TEST_CATEGORY_ID) } returns flow {
             throw IOException(ERROR_MESSAGE)
         }
 
         viewModel = createViewModel()
-        val state = viewModel.uiState.value
 
-        assertTrue(state.recipes.isEmpty())
-        assertFalse(state.isLoading)
-        assertNotNull(state.error)
-        assertEquals(ERROR_MESSAGE, state.error)
+        viewModel.uiState.test {
+            val state = awaitItem()
 
-        assertEquals(TEST_CATEGORY_ID, state.categoryId)
-        assertEquals(TEST_CATEGORY_TITLE, state.categoryTitle)
-        assertEquals(TEST_CATEGORY_IMAGE_URL, state.categoryImageUrl)
+            assertTrue(state.recipes.isEmpty())
+            assertFalse(state.isLoading)
+            assertNotNull(state.error)
+            assertEquals(ERROR_MESSAGE, state.error)
+            assertEquals(TEST_CATEGORY_ID, state.categoryId)
+            assertEquals(TEST_CATEGORY_TITLE, state.categoryTitle)
+            assertEquals(TEST_CATEGORY_IMAGE_URL, state.categoryImageUrl)
+
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     private fun createViewModel(
