@@ -17,23 +17,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.SavedStateHandle
 import coil3.compose.rememberAsyncImagePainter
 import com.ifedorov.recipecomposeapp.R
+import com.ifedorov.recipecomposeapp.core.ui.TestTags
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
-import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_ID
-import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_IMAGE_URL
-import com.ifedorov.recipecomposeapp.core.utils.Constants.PARAM_CATEGORY_TITLE
-import com.ifedorov.recipecomposeapp.data.model.CategoryDto
-import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
-import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.RecipesViewModel
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.IngredientUiModel
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.RecipesUiState
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
-import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun RecipesScreen(
@@ -42,6 +39,20 @@ fun RecipesScreen(
     onRecipeClick: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    RecipesContent(
+        uiState = uiState,
+        modifier = modifier,
+        onRecipeClick = onRecipeClick
+    )
+}
+
+@Composable
+fun RecipesContent(
+    uiState: RecipesUiState,
+    modifier: Modifier = Modifier,
+    onRecipeClick: (Int) -> Unit
+) {
     val headerImage = rememberAsyncImagePainter(uiState.categoryImageUrl)
 
     Column(
@@ -60,7 +71,9 @@ fun RecipesScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        modifier = Modifier.testTag(TestTags.LOADING_STATE)
+                    )
                 }
             }
 
@@ -73,7 +86,8 @@ fun RecipesScreen(
                         text = stringResource(R.string.downloading_error, uiState.error ?: ""),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.testTag(TestTags.ERROR_STATE)
                     )
                 }
             }
@@ -87,7 +101,8 @@ fun RecipesScreen(
                         text = stringResource(R.string.downloading_error_or_list_is_empty),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.testTag(TestTags.EMPTY_STATE)
                     )
                 }
             }
@@ -114,35 +129,44 @@ fun RecipesScreen(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewRecipesScreen() {
-    val fakeRepository: RecipesRepository = object : RecipesRepository {
-        override fun getCategories() = flowOf(emptyList<CategoryDto>())
-        override fun getRecipesByCategory(categoryId: Int) =
-            flowOf(RecipesRepositoryStub.getRecipesByCategoryId(0))
-
-        override fun getRecipe(recipeId: Int) =
-            flowOf(RecipesRepositoryStub.getRecipeById(recipeId))
-
-        override fun getRecipesByIds(recipeIds: List<Int>) =
-            flowOf(recipeIds.mapNotNull { id ->
-                RecipesRepositoryStub.getRecipesByCategoryId(0).find { it.id == id }
-            })
-    }
-
-    val fakeViewModel = RecipesViewModel(
-        savedStateHandle = SavedStateHandle(
-            mapOf(
-                PARAM_CATEGORY_ID to 0,
-                PARAM_CATEGORY_TITLE to "Бургеры",
-                PARAM_CATEGORY_IMAGE_URL to ""
-            )
-        ),
-        repository = fakeRepository
-    )
-
     RecipeComposeAppTheme {
-        RecipesScreen(
-            viewModel = fakeViewModel,
-            onRecipeClick = {}
+        RecipesContent(
+            uiState = RecipesUiState(
+                categoryTitle = "Классический гамбургер",
+                recipes = listOf(
+                    RecipeUiModel(
+                        id = 1,
+                        title = "Классический бургер",
+                        imageUrl = "burger-hamburger.jpg",
+                        ingredients = listOf(
+                            IngredientUiModel(
+                                name = "Фарш говяжий",
+                                quantity = "150",
+                                unitOfMeasure = "г"
+                            )
+                        ),
+                        method = listOf("Разрезать булочку", "Обжарить котлету"),
+                        isFavorite = false,
+                        servings = 1
+                    ),
+                    RecipeUiModel(
+                        id = 2,
+                        title = "Чизбургер",
+                        imageUrl = "burger-cheeseburger.jpg",
+                        ingredients = listOf(
+                            IngredientUiModel(
+                                name = "Сыр чеддер",
+                                quantity = "1",
+                                unitOfMeasure = "ломтик"
+                            )
+                        ),
+                        method = listOf("Разрезать булочку", "Обжарить котлету"),
+                        isFavorite = false,
+                        servings = 1
+                    )
+                )
+            ),
+            onRecipeClick = { }
         )
     }
 }
