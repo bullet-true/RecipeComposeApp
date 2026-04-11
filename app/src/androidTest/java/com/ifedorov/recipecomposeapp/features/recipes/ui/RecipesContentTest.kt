@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ifedorov.recipecomposeapp.core.ui.TestTags
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.IngredientUiModel
 import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
@@ -11,7 +12,9 @@ import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.Recipes
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class RecipesContentTest {
 
     @get:Rule
