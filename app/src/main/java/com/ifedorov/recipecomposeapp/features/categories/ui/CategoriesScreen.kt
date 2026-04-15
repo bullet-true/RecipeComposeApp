@@ -58,6 +58,7 @@ fun CategoriesContent(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .testTag(TestTags.CATEGORIES_SCREEN)
     ) {
         ScreenHeader(
             title = stringResource(R.string.categories),
@@ -110,7 +111,8 @@ fun CategoriesContent(
                     columns = GridCells.Adaptive(160.dp),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.testTag(TestTags.CATEGORIES_GRID)
                 ) {
                     items(
                         items = uiState.categories,

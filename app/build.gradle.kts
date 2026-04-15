@@ -22,7 +22,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "com.ifedorov.recipecomposeapp.HiltTestRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -126,6 +126,10 @@ dependencies {
     androidTestImplementation(libs.coroutines.test)
     androidTestImplementation(libs.turbine)
     androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.kaspresso)
+    androidTestImplementation(libs.kaspresso.compose)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
     kspAndroidTest(libs.hilt.compiler)
 
     debugImplementation(libs.androidx.compose.ui.tooling)

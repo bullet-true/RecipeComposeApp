@@ -11,8 +11,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ifedorov.recipecomposeapp.core.ui.TestTags
 import com.ifedorov.recipecomposeapp.core.ui.components.RecipeImage
 import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.categories.presentation.model.CategoryUiModel
@@ -28,7 +30,9 @@ fun CategoryItem(
 ) {
     Card(
         onClick = onClick,
-        modifier = modifier.height(220.dp),
+        modifier = modifier
+            .height(220.dp)
+            .testTag(TestTags.CATEGORY_ITEM),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
