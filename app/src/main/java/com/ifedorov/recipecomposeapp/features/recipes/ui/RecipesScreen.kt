@@ -59,6 +59,7 @@ fun RecipesContent(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .testTag(TestTags.RECIPES_SCREEN)
     ) {
         ScreenHeader(
             title = uiState.categoryTitle,
