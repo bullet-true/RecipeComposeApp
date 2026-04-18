@@ -1,3 +1,4 @@
+![image](image.gif)
 
 ---
 
@@ -112,10 +113,18 @@ Room DB      Retrofit API
 
 ## Тестирование
 
-* JUnit
-* MockK
-* Espresso
-* Compose UI Test
+* **JUnit** — unit-тесты бизнес-логики
+* **MockK** — мокирование зависимостей
+* **Turbine** — тестирование Flow и StateFlow
+* **Coroutines Test** — тестирование корутин
+* **Room Testing** — тестирование базы данных
+* **MockWebServer** — тестирование сетевого слоя
+* **Hilt Testing** — DI в инструментальных тестах
+* **Compose UI Test** — тестирование Compose-экранов
+* **Kaspresso** — E2E UI-тесты с поддержкой Compose
+* **JaCoCo** — отчёты покрытия кода
+* **Codecov** — визуализация и мониторинг покрытия
+* **GitHub Actions** — CI/CD pipeline
 
 ---
 
@@ -163,17 +172,37 @@ app
 
 # 🧪 Тестирование
 
-В проекте предусмотрена инфраструктура для тестирования:
+Проект покрыт тестами.
 
-* unit-тесты бизнес-логики
-* тестирование ViewModel
-* UI-тесты для Compose
+## Unit-тесты
 
-Используемые инструменты:
+* тестирование ViewModel через **JUnit + MockK**
+* тестирование StateFlow и событий через **Turbine**
+* тестирование корутин через **Coroutines Test**
 
-* JUnit
-* MockK
-* Compose Test API
+## Интеграционные тесты
+
+* тестирование Room Database через **Room Testing**
+* тестирование Repository с реальной базой данных
+* тестирование сетевого слоя через **MockWebServer**
+* DI в тестах через **Hilt Testing**
+
+## UI-тесты
+
+* тестирование Compose-экранов через **Compose UI Test**
+* E2E сценарии через **Kaspresso** с поддержкой Compose
+* тестирование навигации и deep links
+
+## Покрытие кода
+
+* отчёты генерируются через **JaCoCo**
+* визуализация покрытия в **Codecov**
+
+## CI/CD
+
+* автоматический запуск тестов при каждом push через **GitHub Actions**
+* линт и сборка APK в pipeline
+* артефакты отчётов сохраняются при падении
 
 ---
 
@@ -187,4 +216,6 @@ app
 * offline-first архитектура
 * локальное кеширование данных
 * Dependency Injection
-* тестирование бизнес-логики
+* многоуровневое тестирование (unit, интеграционные, UI, E2E)
+* настройка CI/CD pipeline с GitHub Actions
+* мониторинг покрытия кода через Codecov
