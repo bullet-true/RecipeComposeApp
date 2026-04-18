@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - RCA-53-ci
   pull_request:
     branches:
       - master

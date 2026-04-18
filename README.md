@@ -3,6 +3,9 @@
 
 # RecipeComposeApp
 
+![Android CI](https://github.com/bullet-true/RecipeComposeApp/actions/workflows/ci.yml/badge.svg)
+[![codecov](https://codecov.io/gh/bullet-true/RecipeComposeApp/branch/master/graph/badge.svg)](https://codecov.io/gh/bullet-true/RecipeComposeApp)
+
 Android-приложение с **offline-first архитектурой, локальным кешированием и реактивным UI на Jetpack Compose**.
 
 Проект демонстрирует разработку современного Android-приложения с использованием **Jetpack Compose, MVVM, Room, DataStore, Retrofit, Kotlin Coroutines и Dependency Injection**.
