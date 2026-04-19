@@ -16,7 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -24,13 +23,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ifedorov.recipecomposeapp.R
 import com.ifedorov.recipecomposeapp.core.ui.components.ScreenHeader
-import com.ifedorov.recipecomposeapp.data.model.CategoryDto
-import com.ifedorov.recipecomposeapp.data.repository.RecipesRepository
-import com.ifedorov.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.ifedorov.recipecomposeapp.features.favorites.presentation.FavoritesViewModel
+import com.ifedorov.recipecomposeapp.features.favorites.presentation.model.FavoritesUiState
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.IngredientUiModel
+import com.ifedorov.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
 import com.ifedorov.recipecomposeapp.features.recipes.ui.RecipeItem
 import com.ifedorov.recipecomposeapp.ui.theme.RecipeComposeAppTheme
-import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun FavoritesScreen(
@@ -40,6 +38,19 @@ fun FavoritesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    FavoritesContent(
+        uiState = uiState,
+        modifier = modifier,
+        onFavoriteRecipeClick = onFavoriteRecipeClick
+    )
+}
+
+@Composable
+fun FavoritesContent(
+    uiState: FavoritesUiState,
+    modifier: Modifier = Modifier,
+    onFavoriteRecipeClick: (Int) -> Unit
+) {
     when {
         uiState.isLoading -> {
             Box(
@@ -119,32 +130,47 @@ fun FavoritesScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun PreviewFavoritesScreen() {
-    val context = LocalContext.current
-    val application = context.applicationContext as android.app.Application
-
-    val fakeRepository: RecipesRepository = object : RecipesRepository {
-        override fun getCategories() = flowOf(emptyList<CategoryDto>())
-        override fun getRecipesByCategory(categoryId: Int) =
-            flowOf(RecipesRepositoryStub.getRecipesByCategoryId(0))
-
-        override fun getRecipe(recipeId: Int) =
-            flowOf(RecipesRepositoryStub.getRecipeById(recipeId))
-
-        override fun getRecipesByIds(recipeIds: List<Int>) =
-            flowOf(recipeIds.mapNotNull { id ->
-                RecipesRepositoryStub.getRecipesByCategoryId(0).find { it.id == id }
-            })
-    }
-
-    val fakeViewModel = FavoritesViewModel(
-        application = application,
-        repository = fakeRepository
+private fun PreviewFavoritesContent() {
+    val previewRecipes = listOf(
+        RecipeUiModel(
+            id = 1,
+            title = "Классический бургер",
+            imageUrl = "burger-hamburger.jpg",
+            ingredients = listOf(
+                IngredientUiModel(
+                    name = "Фарш говяжий",
+                    quantity = "150",
+                    unitOfMeasure = "г"
+                )
+            ),
+            method = listOf("Разрезать булочку"),
+            isFavorite = true,
+            servings = 1
+        ),
+        RecipeUiModel(
+            id = 2,
+            title = "Чизбургер",
+            imageUrl = "burger-cheeseburger.jpg",
+            ingredients = listOf(
+                IngredientUiModel(
+                    name = "Сыр чеддер",
+                    quantity = "1",
+                    unitOfMeasure = "ломтик"
+                )
+            ),
+            method = listOf("Обжарить котлету"),
+            isFavorite = true,
+            servings = 1
+        )
     )
 
     RecipeComposeAppTheme {
-        FavoritesScreen(
-            viewModel = fakeViewModel,
+        FavoritesContent(
+            uiState = FavoritesUiState(
+                favoriteRecipes = previewRecipes,
+                isLoading = false,
+                error = null
+            ),
             onFavoriteRecipeClick = {}
         )
     }
